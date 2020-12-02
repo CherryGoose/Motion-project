@@ -63,7 +63,7 @@ namespace Motion_Project
             DataBits.SelectedIndex = 0;
            // TerminationBox.SelectedIndex = 0;
         }
-
+     
      
         void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -71,7 +71,7 @@ namespace Motion_Project
                 delegate
                 {
                     rtbDisplay.SelectionColor = Color.Blue;
-                    for (int i = 0; i < port.Length; i++)
+                    for (int i = 1; i < port.Length; i++)
                     {
                         if (port[i].IsOpen)
                         {
@@ -94,23 +94,22 @@ namespace Motion_Project
                                 }
                                 else if (File.Exists(pathtof + "\\" + Filename + ".txt"))
                                 {
-                                    if (data != "")
+                                    if (data=="Split\r\n"&& writeEvent)
+                                    {
+                                        Filename = "READYTORECORD";
+                                        WriteLabel.Text = "Ready";
+                                        writeEvent = false;
+                                        createNewfile = true;
+                                    }
+                                    else if (data != "" && createNewfile == false && data!= "Split\r\n")
                                     {
                                         File.AppendAllText(pathtof + "\\" + Filename + ".txt", data + "\r\n");
                                         writeEvent = true;
                                     }
-                                    if (data == "")
-                                        rtbDisplay.AppendText("data empty!\n");
-                                    if (data == "\n")
-                                    {
-                                        rtbDisplay.AppendText("write event!\n");
-                                        if (writeEvent == true)
-                                        {
-                                            createNewfile = true;
-                                            Filename = "READYTORECORD";
-                                            WriteLabel.Text = "Ready";
-                                        }
-                                    }
+                                    
+                                   
+                                     
+                                    
                                     //File.AppendAllText(pathtof + "\\" + Filename + ".txt", port[i].PortName+"\r\n");
                                     /*  using (TextWriter tw = new StreamWriter(pathtof + "\\" + Filename + ".txt",true))
                                       {
@@ -122,8 +121,15 @@ namespace Motion_Project
                             }
                         }
                     }
+                    
+                   
+                        
+                   
                     rtbDisplay.ScrollToCaret();
+
                 }));
+          
+                
         }
 
         private void ClosePort_Click(object sender, EventArgs e)
