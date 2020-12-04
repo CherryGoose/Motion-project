@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 using System.IO;
+using System.Globalization;
+using System.Collections.Generic;
 
 namespace Motion_Project
 {
@@ -246,6 +242,110 @@ namespace Motion_Project
                     curContent = curContent.Replace(";COM4;", "");
                     File.WriteAllText(pathToCheck, curContent);
                 }
+            }
+        }
+
+        private void ResizeDataButton_Click(object sender, EventArgs e)
+        {
+            
+
+                string[] files = Directory.GetFiles("C:\\Users\\saret\\OneDrive\\Рабочий стол\\Arduino\\Motion Project" +
+                    "\\bin\\Debug\\Files\\Правая рука вверх с поворотом сидя 23-24-45", "*");
+
+                foreach (string pathToParse in files)
+                {
+                    string[] curFileToResize = File.ReadAllLines(pathToParse);
+                    double[,] ParsedString = new double[curFileToResize.Length, 14];
+
+                    for (int i = 0; i < curFileToResize.Length; i++)
+                    {
+                        if (curFileToResize[i] == "")
+                        {
+                            continue;
+                        }
+                        curFileToResize[i] = curFileToResize[i].Replace("COM", "");
+                        curFileToResize[i] = curFileToResize[i].Replace(" ", ",");
+                        string[] a = curFileToResize[i].Split(',');
+                        if (a.Length < 14)
+                        {
+                            continue;
+                        }
+                        for (int j = 0; j < a.Length; j++)
+                        {
+                            ParsedString[i, j] = double.Parse(a[j], CultureInfo.InvariantCulture);
+                        }
+                    }
+
+                    double[,] ResizedData = new double[2000, 14];
+                    int PointsLength = ParsedString.GetLength(0);
+                    PointsLength = ResizedData.GetLength(0) / PointsLength;
+                    for (int i = 0; i < ResizedData.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < ResizedData.GetLength(1); j++)
+                        {
+                            ResizedData[i, j] = 777;
+                        }
+                    }
+                    int parsedSTRCounter = 0;
+                    int stepCount=1;
+                    double nextValue = 0;
+
+                    for (int j = 0; j < ResizedData.GetLength(1); j++)
+                    {
+                    parsedSTRCounter = 0;
+                    stepCount = 0;
+                    nextValue = 0;
+                    for (int i = 0; i < ResizedData.GetLength(0); i++)
+                        {
+                            if (parsedSTRCounter >= PointsLength)
+                                continue;
+                        double firstVal = ParsedString[parsedSTRCounter, j];
+                        double secondVal = ParsedString[(parsedSTRCounter + 1), j];
+                            double Val  = Math.Abs( ParsedString[parsedSTRCounter, j] > ParsedString[(parsedSTRCounter + 1), j] ? 
+                                ParsedString[parsedSTRCounter, j] - ParsedString[(parsedSTRCounter + 1), j]
+                                : ParsedString[(parsedSTRCounter + 1), j] - ParsedString[parsedSTRCounter, j]);
+                            int signVal;
+                            if (ParsedString[parsedSTRCounter, j] < ParsedString[(parsedSTRCounter + 1), j])
+                                signVal = 1;
+                            else signVal = -1;
+                            nextValue += signVal*Val / PointsLength;
+                        ResizedData[i, j] =Math.Round( nextValue,3);
+                        stepCount++;
+                        if (parsedSTRCounter * PointsLength == i && parsedSTRCounter < ParsedString.GetLength(0))
+                        {
+
+                            ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
+                            parsedSTRCounter++;
+                        }
+                    }
+                    }
+                    for (int i = 0; i < ResizedData.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < ResizedData.GetLength(1); j++)
+                        {
+                            rtbDisplay.AppendText(ResizedData[i, j] + " ");
+                        }
+                        rtbDisplay.AppendText("\r\n");
+                    }
+                   /* string dir = tBoxTrashFolder.Text + "Parsed";
+                    if (!Directory.Exists(dir))
+                        Directory.CreateDirectory(dir);
+                    else
+                    {
+                        string dataToWrite = "";
+                        for (int j = 0; j < ResizedData.GetLength(0); j++)
+                        {
+                            for (int i = 0; i < ResizedData.GetLength(1); i++)
+                            {
+                                dataToWrite += ResizedData[i, j] + " ";
+                            }
+                            dataToWrite += "\r\n";
+                            File.WriteAllText(dir + Path.GetFileName(pathToParse) + "Parsed", dataToWrite);
+                        }
+
+                    }*/
+
+                
             }
         }
     }
