@@ -15,19 +15,21 @@ namespace Motion_Project
     public partial class SelialReader : Form
     {
         SerialPort[] port= new SerialPort[1];
-        string[] portnames;
         string pathtof;
         string Filename = "READYTORECORD";
         string data;
         bool WTF=false;
-        bool createNewfile = true;
-        bool writeEvent = false;
+        int fileNum = 0;
+        string prevFileName = "";
+        string fullData = ";COM3;\n;COM4;";
+
         public SelialReader()
         {
             InitializeComponent();
             pathtof=Directory.GetCurrentDirectory();
             WriteLabel.Text = "Ready";
-            pathtof += "\\Files";
+            pathtof += "\\Files\\" + DateTime.Now.ToString("dd.MM.yy HH-mm-ss");
+            Directory.CreateDirectory(pathtof);
         }
      
 
@@ -39,13 +41,11 @@ namespace Motion_Project
         {
             ClosePort.Enabled = false;
             port= new SerialPort[SerialPort.GetPortNames().Length];
-            portnames = new string[SerialPort.GetPortNames().Length];
             for (int i = 0; i < SerialPort.GetPortNames().Length; i++)
             {
                 port[i] = new SerialPort();
 
             }
-            portnames = SerialPort.GetPortNames();
             foreach (string str in SerialPort.GetPortNames())
             {
                 PortBox.Items.Add(str);
@@ -67,77 +67,74 @@ namespace Motion_Project
      
         void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            this.Invoke(new EventHandler(
+            Invoke(new EventHandler(
                 delegate
                 {
-                    rtbDisplay.SelectionColor = Color.Blue;
-                    for (int i = 1; i < port.Length; i++)
+                    bool allSensorsIdle = true;
+                    for (int i = 0; i < port.Length; i++)
                     {
-                        if (port[i].IsOpen)
+                        if (!port[i].IsOpen)
                         {
-                            //rtbDisplay.AppendText(port[i].PortName + "  ");
-                            //rtbDisplay.AppendText(port[i].ReadExisting());
-                            data = port[i].ReadExisting();
+                            continue;
+                        }
+                        if (i == 1)
+                        {
+                            rtbDisplay.SelectionColor = Color.Blue;
+                        }
+                        else
+                        {
+                            rtbDisplay.SelectionColor = Color.Red;
+                        }
+                        data = port[i].ReadExisting();
+                        if (!data.Contains("Split"))
+                        {
                             rtbDisplay.AppendText(data);
-                            if (WTF)
+                        }
+                        else
+                        {
+                            rtbDisplay.ScrollToCaret();
+                        }
+                        if (!WTF)
+                        {
+                            continue;
+                        }
+                        if (!data.Contains("Split"))
+                        {
+                            allSensorsIdle = false;
+                            data = data.Replace("\r\n", " " + port[i].PortName + "\r\n");
+                            string signature = ";" + port[i].PortName + ";";
+                            data += signature;
+                            fullData = fullData.Replace(signature, data);
+                            if (!fullData.Equals(";COM3;\n;COM4;"))
                             {
-                                
-                                if (!File.Exists(pathtof+ "\\" + Filename + ".txt")&& createNewfile==true)
+                                labelWritingDone.Text = "WRITING";
+                                File.WriteAllText(pathtof + "\\" + Filename + ".txt", fullData);
+                                if (!prevFileName.Equals(Filename))
                                 {
-                                    Filename = DateTime.Now.ToLongDateString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + DateTime.Now.Millisecond.ToString();
-                                    File.Create(pathtof + "\\" + Filename + ".txt").Dispose();
-
-                                    File.AppendAllText(pathtof + "\\" + Filename + ".txt", "The very first line!");
-                                    createNewfile = false;
-                                    writeEvent = false;
-                                    WriteLabel.Text = "Writing";
-                                }
-                                else if (File.Exists(pathtof + "\\" + Filename + ".txt"))
-                                {
-                                    if (data=="Split\r\n"&& writeEvent)
-                                    {
-                                        Filename = "READYTORECORD";
-                                        WriteLabel.Text = "Ready";
-                                        writeEvent = false;
-                                        createNewfile = true;
-                                    }
-                                    else if (data != "" && createNewfile == false && data!= "Split\r\n")
-                                    {
-                                        File.AppendAllText(pathtof + "\\" + Filename + ".txt", data + "\r\n");
-                                        writeEvent = true;
-                                    }
-                                    
-                                   
-                                     
-                                    
-                                    //File.AppendAllText(pathtof + "\\" + Filename + ".txt", port[i].PortName+"\r\n");
-                                    /*  using (TextWriter tw = new StreamWriter(pathtof + "\\" + Filename + ".txt",true))
-                                      {
-                                          tw.WriteLine(port[i].PortName+" ");
-                                          tw.WriteLine(data);
-                                          tw.WriteLine(" Pass \n");
-                                      }*/
+                                    fileNum++;
+                                    prevFileName = Filename;
                                 }
                             }
                         }
                     }
-                    
-                   
-                        
-                   
-                    rtbDisplay.ScrollToCaret();
-
+                    if (allSensorsIdle)
+                    {
+                        labelWritingDone.Text = "STANDBY";
+                        fullData = ";COM3;\n;COM4;";
+                        Filename = fileNum.ToString();
+                    }
                 }));
-          
-                
         }
 
         private void ClosePort_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < port.Length; i++)
             {
+                if (port[i].PortName == "COM1")
+                    continue;
                 port[i].Close();
             }
+
             ClosePort.Enabled = false;
             OpenPort.Text = "Open Port";
             rtbDisplay.SelectionColor = Color.Red;
@@ -152,7 +149,7 @@ namespace Motion_Project
             if (!port.IsOpen)
             {
                 rtbDisplay.SelectionColor = Color.Red;
-                rtbDisplay.AppendText("Error: Not Connected to Port! Establish connection first.\n");
+                rtbDisplay.AppendText("Error: Not connected to Port! Establish connection first.\n");
                   rtbDisplay.ScrollToCaret();
                 return;
             }
@@ -224,11 +221,31 @@ namespace Motion_Project
             {
                 WTF = false;
                 Filename = "READYTORECORD";
-                WriteLabel.Text = "Ready";
+                WriteLabel.Text = "Ready";                
             }
-            else {
+            else 
+            {
                 WTF = true;
                 WriteLabel.Text = "Writing";
+            }
+        }
+
+        private void buttonFixTrash_Click(object sender, EventArgs e)
+        {
+            string[] files = Directory.GetFiles(tBoxTrashFolder.Text, "*");
+            foreach (string pathToCheck in files)
+            {
+                string curContent = File.ReadAllText(pathToCheck);
+                if (curContent == ";COM3;\n;COM4;")
+                {
+                    File.Delete(pathToCheck);
+                }
+                else
+                {
+                    curContent = curContent.Replace(";COM3;", "");
+                    curContent = curContent.Replace(";COM4;", "");
+                    File.WriteAllText(pathToCheck, curContent);
+                }
             }
         }
     }
