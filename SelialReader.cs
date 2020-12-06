@@ -276,34 +276,20 @@ namespace Motion_Project
                 double[,] ResizedData = new double[2000, 14];
                 int PointsLength = ParsedString.GetLength(0);
                 PointsLength = ResizedData.GetLength(0) / PointsLength;
-                for (int i = 0; i < ResizedData.GetLength(0); i++)
+                for (int i = 0; i < ParsedString.GetLength(0) - 1; i++)
                 {
-                    for (int j = 0; j < ResizedData.GetLength(1); j++)
+                    for (int j = 0; j < ParsedString.GetLength(1) - 1; j++)
                     {
-                        ResizedData[i, j] = 777;
-                    }
-                }
-                for (int j = 0; j < 1; j++)
-                {
-                    int parsedSTRCounter = 0;
-                    double nextValue = 0;
+                        double curValue = ParsedString[i, j];
+                        double nextValue = ParsedString[i + 1, j];
+                        double curInc = (nextValue - curValue) / PointsLength;
 
-                    for (int i = 0; i < ResizedData.GetLength(0); i++)
-                    {
-                        if (i > parsedSTRCounter * PointsLength || parsedSTRCounter + 1 >= ParsedString.GetLength(0))
+                        int curResizedInd = i * PointsLength;
+                        for (int k = 0; k < PointsLength; k++)
                         {
-                            ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
-                            continue;
-                        }
-                        double Val = Math.Abs(ParsedString[parsedSTRCounter, j] - ParsedString[(parsedSTRCounter + 1), j]);
-                        int signVal = ParsedString[parsedSTRCounter, j] < ParsedString[(parsedSTRCounter + 1), j] ? 1 : -1;
-                        nextValue += signVal * Val / PointsLength;
-                        ResizedData[i, j] = Math.Round(nextValue, 4);
-                        if (parsedSTRCounter * PointsLength == i && parsedSTRCounter < ParsedString.GetLength(0))
-                        {
-                            ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
-                            nextValue = ParsedString[parsedSTRCounter, j];
-                            parsedSTRCounter++;
+                            ResizedData[curResizedInd, j] = Math.Round(curValue, 4);
+                            curValue += curInc;
+                            curResizedInd++;
                         }
                     }
                 }
@@ -313,7 +299,7 @@ namespace Motion_Project
                 StringBuilder builder = new StringBuilder();
                 for (int j = 0; j < ResizedData.GetLength(0); j++)
                 {
-                    for (int i = 0; i < 1; i++)
+                    for (int i = 0; i < ResizedData.GetLength(1); i++)
                     {
                         builder.Append(ResizedData[j, i]);
                         builder.Append(" ");
