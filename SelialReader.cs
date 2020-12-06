@@ -250,6 +250,7 @@ namespace Motion_Project
         {
             string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45";
             string[] files = Directory.GetFiles(pathToData, "*");
+            resizeLabel.Text = "";
             foreach (string pathToParse in files)
             {
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
@@ -314,21 +315,20 @@ namespace Motion_Project
                 string dir = pathToData + " Parsed";
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
-                else
+                StringBuilder builder = new StringBuilder();
+                for (int j = 0; j < ResizedData.GetLength(0); j++)
                 {
-                    StringBuilder builder = new StringBuilder();
-                    for (int j = 0; j < ResizedData.GetLength(0); j++)
+                    for (int i = 0; i < ResizedData.GetLength(1); i++)
                     {
-                        for (int i = 0; i < ResizedData.GetLength(1); i++)
-                        {
-                            builder.Append(ResizedData[j, i]);
-                            builder.Append(" ");
-                        }
-                        builder.Append("\r\n");
+                        builder.Append(ResizedData[j, i]);
+                        builder.Append(" ");
                     }
-                    File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), builder.ToString());
+                    builder.Append("\r\n");
                 }
+                File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), builder.ToString());
             }
+            resizeLabel.Text = "Resizing done!";
         }
+
     }
 }
