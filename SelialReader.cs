@@ -233,14 +233,16 @@ namespace Motion_Project
             foreach (string pathToCheck in files)
             {
                 string curContent = File.ReadAllText(pathToCheck);
-                if (curContent == ";COM3;\n;COM4;")
+                if (curContent == ";COM3;\n;COM4;" || !curContent.Contains("\n"))
                 {
                     File.Delete(pathToCheck);
                 }
                 else
                 {
-                    curContent = curContent.Replace(";COM3;", "");
-                    curContent = curContent.Replace(";COM4;", "");
+                    curContent = curContent.Replace("\r\n;COM3;", "");
+                    curContent = curContent.Replace("\r\n;COM4;", "");
+                    curContent = curContent.Replace("\r\n\n", "\r\n");
+                    curContent = curContent.Trim();
                     File.WriteAllText(pathToCheck, curContent);
                 }
             }
@@ -274,7 +276,7 @@ namespace Motion_Project
                     }
                 }
                 double[,] ResizedData = new double[2000, 14];
-                int PointsLength = ResizedData.GetLength(0) / ParsedString.GetLength(0);
+                int PointsLength = ResizedData.GetLength(0) / ParsedString.GetLength(0); 
                 for (int i = 0; i < ParsedString.GetLength(0) - 1; i++)
                 {
                     for (int j = 0; j < ParsedString.GetLength(1) - 1; j++)
@@ -290,10 +292,14 @@ namespace Motion_Project
                             curValue += curInc;
                             curResizedInd++;
                         }
-                        if (i > ParsedString.GetLength(0) * PointsLength)
-                        {
-                            ResizedData[i, j] = ParsedString[ParsedString.GetLength(0) * PointsLength, j];
-                        }
+                    }
+                }
+                int leftoverData = 2000 % (ParsedString.GetLength(0) - 1);
+                for (int i = ResizedData.GetLength(0) - leftoverData; i < 2000; i++)
+                {
+                    for (int j = 0; j < ResizedData.GetLength(1); j++)
+                    {
+                        ResizedData[i, j] = ParsedString[ParsedString.GetLength(0) - 1, j];
                     }
                 }
                 string dir = pathToData + " Parsed";
@@ -302,7 +308,7 @@ namespace Motion_Project
                 StringBuilder builder = new StringBuilder();
                 for (int j = 0; j < ResizedData.GetLength(0); j++)
                 {
-                    for (int i = 0; i < 1; i++)
+                    for (int i = 0; i < ResizedData.GetLength(1); i++)
                     {
                         builder.Append(ResizedData[j, i]);
                         builder.Append(" ");
