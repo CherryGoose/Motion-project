@@ -310,7 +310,7 @@ namespace Motion_Project
                         }
                     }
                 }
-                string dir = pathToData + "\\Parsed";
+                string dir = pathToData + " Parsed";
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
                 else
