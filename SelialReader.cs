@@ -10,11 +10,11 @@ namespace Motion_Project
 {
     public partial class SelialReader : Form
     {
-        SerialPort[] port= new SerialPort[1];
+        SerialPort[] port = new SerialPort[1];
         string pathtof;
         string Filename = "READYTORECORD";
         string data;
-        bool WTF=false;
+        bool WTF = false;
         int fileNum = 0;
         string prevFileName = "";
         string fullData = ";COM3;\n;COM4;";
@@ -22,12 +22,12 @@ namespace Motion_Project
         public SelialReader()
         {
             InitializeComponent();
-            pathtof=Directory.GetCurrentDirectory();
+            pathtof = Directory.GetCurrentDirectory();
             WriteLabel.Text = "Ready";
             pathtof += "\\Files\\" + DateTime.Now.ToString("dd.MM.yy HH-mm-ss");
             Directory.CreateDirectory(pathtof);
         }
-     
+
 
         private void SelialReader_Load(object sender, EventArgs e)
         {
@@ -36,7 +36,7 @@ namespace Motion_Project
         private void SetupControls()
         {
             ClosePort.Enabled = false;
-            port= new SerialPort[SerialPort.GetPortNames().Length];
+            port = new SerialPort[SerialPort.GetPortNames().Length];
             for (int i = 0; i < SerialPort.GetPortNames().Length; i++)
             {
                 port[i] = new SerialPort();
@@ -57,10 +57,10 @@ namespace Motion_Project
             StopBits.SelectedIndex = 0;
             BaudBox.SelectedIndex = 9;
             DataBits.SelectedIndex = 0;
-           // TerminationBox.SelectedIndex = 0;
+            // TerminationBox.SelectedIndex = 0;
         }
-     
-     
+
+
         void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             Invoke(new EventHandler(
@@ -140,37 +140,37 @@ namespace Motion_Project
 
         private void Send_Click(object sender, EventArgs e)
         {
-          /*  string lineTermination = string.Empty;
+            /*  string lineTermination = string.Empty;
 
-            if (!port.IsOpen)
-            {
-                rtbDisplay.SelectionColor = Color.Red;
-                rtbDisplay.AppendText("Error: Not connected to Port! Establish connection first.\n");
-                  rtbDisplay.ScrollToCaret();
-                return;
-            }
+              if (!port.IsOpen)
+              {
+                  rtbDisplay.SelectionColor = Color.Red;
+                  rtbDisplay.AppendText("Error: Not connected to Port! Establish connection first.\n");
+                    rtbDisplay.ScrollToCaret();
+                  return;
+              }
 
-            rtbDisplay.SelectionColor = Color.Green;
-            switch (TerminationBox.SelectedIndex)
-            {
-                case 0:
-                    lineTermination = string.Empty;
-                    break;
-                case 1:
-                    lineTermination = "\n";
-                    break;
-                case 2:
-                    lineTermination = "\r";
-                    break;
-                case 3:
-                    lineTermination = "\n\r";
-                    break;
-                default:
-                    break;
-            }
-            rtbDisplay.AppendText("TX: " + SendText.Text + "\n");
-            port.Write(SendText.Text + lineTermination);
-            rtbDisplay.ScrollToCaret();*/
+              rtbDisplay.SelectionColor = Color.Green;
+              switch (TerminationBox.SelectedIndex)
+              {
+                  case 0:
+                      lineTermination = string.Empty;
+                      break;
+                  case 1:
+                      lineTermination = "\n";
+                      break;
+                  case 2:
+                      lineTermination = "\r";
+                      break;
+                  case 3:
+                      lineTermination = "\n\r";
+                      break;
+                  default:
+                      break;
+              }
+              rtbDisplay.AppendText("TX: " + SendText.Text + "\n");
+              port.Write(SendText.Text + lineTermination);
+              rtbDisplay.ScrollToCaret();*/
         }
 
         private void OpenPort_Click(object sender, EventArgs e)
@@ -191,15 +191,15 @@ namespace Motion_Project
 
                     if (port[i].PortName != "COM1")
                     {
-                         port[i].Open();
-                            port[i].DataReceived +=
-                             new SerialDataReceivedEventHandler(port_DataReceived);
-                            ClosePort.Enabled = true;
-                        
+                        port[i].Open();
+                        port[i].DataReceived +=
+                         new SerialDataReceivedEventHandler(port_DataReceived);
+                        ClosePort.Enabled = true;
+
                     }
                     rtbDisplay.ScrollToCaret();
                 }
-                else                if (port[i].IsOpen == true)
+                else if (port[i].IsOpen == true)
                 {
                     OpenPort.Text = "Refresh Port";
                     ClosePort.Enabled = true;
@@ -217,9 +217,9 @@ namespace Motion_Project
             {
                 WTF = false;
                 Filename = "READYTORECORD";
-                WriteLabel.Text = "Ready";                
+                WriteLabel.Text = "Ready";
             }
-            else 
+            else
             {
                 WTF = true;
                 WriteLabel.Text = "Writing";
@@ -247,103 +247,87 @@ namespace Motion_Project
 
         private void ResizeDataButton_Click(object sender, EventArgs e)
         {
-            
-
-                string[] files = Directory.GetFiles("C:\\Users\\saret\\OneDrive\\Рабочий стол\\Arduino\\Motion Project" +
-                    "\\bin\\Debug\\Files\\Правая рука вверх с поворотом сидя 23-24-45", "*");
-
-                foreach (string pathToParse in files)
+            string[] files = Directory.GetFiles("C:\\Users\\saret\\OneDrive\\Рабочий стол\\Arduino\\Motion Project" +
+                "\\bin\\Debug\\Files\\Правая рука вверх с поворотом сидя 23-24-45", "*");
+            foreach (string pathToParse in files)
+            {
+                string[] curFileToResize = File.ReadAllLines(pathToParse);
+                double[,] ParsedString = new double[curFileToResize.Length, 14];
+                for (int i = 0; i < curFileToResize.Length; i++)
                 {
-                    string[] curFileToResize = File.ReadAllLines(pathToParse);
-                    double[,] ParsedString = new double[curFileToResize.Length, 14];
-
-                    for (int i = 0; i < curFileToResize.Length; i++)
+                    if (curFileToResize[i] == "")
                     {
-                        if (curFileToResize[i] == "")
-                        {
-                            continue;
-                        }
-                        curFileToResize[i] = curFileToResize[i].Replace("COM", "");
-                        curFileToResize[i] = curFileToResize[i].Replace(" ", ",");
-                        string[] a = curFileToResize[i].Split(',');
-                        if (a.Length < ParsedString.GetLength(1) || a.Length > ParsedString.GetLength(1))
-                        {
-                            continue;
-                        }
-                        for (int j = 0; j < a.Length; j++)
-                        {
-                            ParsedString[i, j] = double.Parse(a[j], CultureInfo.InvariantCulture);
-                        }
+                        continue;
                     }
-
-                    double[,] ResizedData = new double[2000, 14];
-                    int PointsLength = ParsedString.GetLength(0);
-                    PointsLength = ResizedData.GetLength(0) / PointsLength;
-                    for (int i = 0; i < ResizedData.GetLength(0); i++)
+                    curFileToResize[i] = curFileToResize[i].Replace("COM", "");
+                    curFileToResize[i] = curFileToResize[i].Replace(" ", ",");
+                    string[] a = curFileToResize[i].Split(',');
+                    if (a.Length < ParsedString.GetLength(1) || a.Length > ParsedString.GetLength(1))
                     {
-                        for (int j = 0; j < ResizedData.GetLength(1); j++)
-                        {
-                            ResizedData[i, j] = 777;
-                        }
+                        continue;
                     }
+                    for (int j = 0; j < a.Length; j++)
+                    {
+                        ParsedString[i, j] = double.Parse(a[j], CultureInfo.InvariantCulture);
+                    }
+                }
+                double[,] ResizedData = new double[2000, 14];
+                int PointsLength = ParsedString.GetLength(0);
+                PointsLength = ResizedData.GetLength(0) / PointsLength;
+                for (int i = 0; i < ResizedData.GetLength(0); i++)
+                {
+                    for (int j = 0; j < ResizedData.GetLength(1); j++)
+                    {
+                        ResizedData[i, j] = 777;
+                    }
+                }
+                for (int j = 0; j < ResizedData.GetLength(1); j++)
+                {
                     int parsedSTRCounter = 0;
                     double nextValue = 0;
 
-                    for (int j = 0; j < ResizedData.GetLength(1); j++)
+                    for (int i = 0; i < ResizedData.GetLength(0); i++)
                     {
-                        parsedSTRCounter = 0;
-                        nextValue = 0;
-                      
-                        for (int i = 0; i < ResizedData.GetLength(0); i++)
-                            {
-                            if (i > parsedSTRCounter * PointsLength|| parsedSTRCounter+1>=ParsedString.GetLength(0))
-                            {
-                                ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
-                                continue;
-                            }
-                                double Val  = Math.Abs( ParsedString[parsedSTRCounter, j] > ParsedString[(parsedSTRCounter + 1), j] ? 
-                                    ParsedString[parsedSTRCounter, j] - ParsedString[(parsedSTRCounter + 1), j]
-                                    : ParsedString[(parsedSTRCounter + 1), j] - ParsedString[parsedSTRCounter, j]);
-                                int signVal;
-                                if (ParsedString[parsedSTRCounter, j] < ParsedString[(parsedSTRCounter + 1), j])
-                                    signVal = 1;
-                                else signVal = -1;
-                                nextValue += signVal*Val / PointsLength;
-                            ResizedData[i, j] =Math.Round( nextValue,4);
-                            if (parsedSTRCounter * PointsLength == i && parsedSTRCounter < ParsedString.GetLength(0))
-                            {
-
-                                ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
-                                nextValue=ParsedString[parsedSTRCounter, j];
-                                parsedSTRCounter++;
-                            }
-                       
-
-
-                        }
-                    }
-               
-                    string dir = "C:\\Users\\saret\\OneDrive\\Рабочий стол\\Arduino\\Motion Project" +
-                    "\\bin\\Debug\\Files\\Правая рука вверх с поворотом сидя 23-24-45" + "Parsed";
-                    if (!Directory.Exists(dir))
-                        Directory.CreateDirectory(dir);
-                    else
-                    {
-                        string dataToWrite = "";
-                        for (int j = 0; j < ResizedData.GetLength(0); j++)
+                        if (i > parsedSTRCounter * PointsLength || parsedSTRCounter + 1 >= ParsedString.GetLength(0))
                         {
-                            for (int i = 0; i < ResizedData.GetLength(1); i++)
-                            {
-                                dataToWrite += ResizedData[j, i] + " ";
-                            }
-                            dataToWrite += "\r\n";
-                            File.WriteAllText(dir +"\\"+ Path.GetFileName(pathToParse), dataToWrite);
+                            ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
+                            continue;
                         }
-
+                        double Val = Math.Abs(ParsedString[parsedSTRCounter, j] > ParsedString[(parsedSTRCounter + 1), j] ?
+                            ParsedString[parsedSTRCounter, j] - ParsedString[(parsedSTRCounter + 1), j]
+                            : ParsedString[(parsedSTRCounter + 1), j] - ParsedString[parsedSTRCounter, j]);
+                        int signVal;
+                        if (ParsedString[parsedSTRCounter, j] < ParsedString[(parsedSTRCounter + 1), j])
+                            signVal = 1;
+                        else signVal = -1;
+                        nextValue += signVal * Val / PointsLength;
+                        ResizedData[i, j] = Math.Round(nextValue, 4);
+                        if (parsedSTRCounter * PointsLength == i && parsedSTRCounter < ParsedString.GetLength(0))
+                        {
+                            ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
+                            nextValue = ParsedString[parsedSTRCounter, j];
+                            parsedSTRCounter++;
+                        }
                     }
-
-                
                 }
+                string dir = "C:\\Users\\saret\\OneDrive\\Рабочий стол\\Arduino\\Motion Project" +
+                    "\\bin\\Debug\\Files\\Правая рука вверх с поворотом сидя 23-24-45" + "Parsed";
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                else
+                {
+                    string dataToWrite = "";
+                    for (int j = 0; j < ResizedData.GetLength(0); j++)
+                    {
+                        for (int i = 0; i < ResizedData.GetLength(1); i++)
+                        {
+                            dataToWrite += ResizedData[j, i] + " ";
+                        }
+                        dataToWrite += "\r\n";
+                        File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), dataToWrite);
+                    }
+                }
+            }
         }
     }
 }
