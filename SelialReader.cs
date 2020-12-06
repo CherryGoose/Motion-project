@@ -289,7 +289,7 @@ namespace Motion_Project
                     int parsedSTRCounter = 0;
                     double nextValue = 0;
 
-                    for (int j = 0; j < 1; j++)
+                    for (int j = 0; j < ResizedData.GetLength(1); j++)
                     {
                         parsedSTRCounter = 0;
                         nextValue = 0;
@@ -332,7 +332,7 @@ namespace Motion_Project
                         string dataToWrite = "";
                         for (int j = 0; j < ResizedData.GetLength(0); j++)
                         {
-                            for (int i = 0; i < 1; i++)
+                            for (int i = 0; i < ResizedData.GetLength(1); i++)
                             {
                                 dataToWrite += ResizedData[j, i] + " ";
                             }
