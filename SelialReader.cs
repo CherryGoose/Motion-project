@@ -266,7 +266,7 @@ namespace Motion_Project
                         curFileToResize[i] = curFileToResize[i].Replace("COM", "");
                         curFileToResize[i] = curFileToResize[i].Replace(" ", ",");
                         string[] a = curFileToResize[i].Split(',');
-                        if (a.Length < 14)
+                        if (a.Length < ParsedString.GetLength(1) || a.Length > ParsedString.GetLength(1))
                         {
                             continue;
                         }
@@ -287,47 +287,44 @@ namespace Motion_Project
                         }
                     }
                     int parsedSTRCounter = 0;
-                    int stepCount=1;
                     double nextValue = 0;
 
-                    for (int j = 0; j < ResizedData.GetLength(1); j++)
+                    for (int j = 0; j < 1; j++)
                     {
-                    parsedSTRCounter = 0;
-                    stepCount = 0;
-                    nextValue = 0;
-                    for (int i = 0; i < ResizedData.GetLength(0); i++)
-                        {
-                            if (parsedSTRCounter >= PointsLength)
+                        parsedSTRCounter = 0;
+                        nextValue = 0;
+                      
+                        for (int i = 0; i < ResizedData.GetLength(0); i++)
+                            {
+                            if (i > parsedSTRCounter * PointsLength|| parsedSTRCounter+1>=ParsedString.GetLength(0))
+                            {
+                                ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
                                 continue;
-                        double firstVal = ParsedString[parsedSTRCounter, j];
-                        double secondVal = ParsedString[(parsedSTRCounter + 1), j];
-                            double Val  = Math.Abs( ParsedString[parsedSTRCounter, j] > ParsedString[(parsedSTRCounter + 1), j] ? 
-                                ParsedString[parsedSTRCounter, j] - ParsedString[(parsedSTRCounter + 1), j]
-                                : ParsedString[(parsedSTRCounter + 1), j] - ParsedString[parsedSTRCounter, j]);
-                            int signVal;
-                            if (ParsedString[parsedSTRCounter, j] < ParsedString[(parsedSTRCounter + 1), j])
-                                signVal = 1;
-                            else signVal = -1;
-                            nextValue += signVal*Val / PointsLength;
-                        ResizedData[i, j] =Math.Round( nextValue,3);
-                        stepCount++;
-                        if (parsedSTRCounter * PointsLength == i && parsedSTRCounter < ParsedString.GetLength(0))
-                        {
+                            }
+                                double Val  = Math.Abs( ParsedString[parsedSTRCounter, j] > ParsedString[(parsedSTRCounter + 1), j] ? 
+                                    ParsedString[parsedSTRCounter, j] - ParsedString[(parsedSTRCounter + 1), j]
+                                    : ParsedString[(parsedSTRCounter + 1), j] - ParsedString[parsedSTRCounter, j]);
+                                int signVal;
+                                if (ParsedString[parsedSTRCounter, j] < ParsedString[(parsedSTRCounter + 1), j])
+                                    signVal = 1;
+                                else signVal = -1;
+                                nextValue += signVal*Val / PointsLength;
+                            ResizedData[i, j] =Math.Round( nextValue,4);
+                            if (parsedSTRCounter * PointsLength == i && parsedSTRCounter < ParsedString.GetLength(0))
+                            {
 
-                            ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
-                            parsedSTRCounter++;
+                                ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
+                                nextValue=ParsedString[parsedSTRCounter, j];
+                                parsedSTRCounter++;
+                            }
+                       
+
+
                         }
                     }
-                    }
-                    for (int i = 0; i < ResizedData.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < ResizedData.GetLength(1); j++)
-                        {
-                            rtbDisplay.AppendText(ResizedData[i, j] + " ");
-                        }
-                        rtbDisplay.AppendText("\r\n");
-                    }
-                   /* string dir = tBoxTrashFolder.Text + "Parsed";
+               
+                    string dir = "C:\\Users\\saret\\OneDrive\\Рабочий стол\\Arduino\\Motion Project" +
+                    "\\bin\\Debug\\Files\\Правая рука вверх с поворотом сидя 23-24-45" + "Parsed";
                     if (!Directory.Exists(dir))
                         Directory.CreateDirectory(dir);
                     else
@@ -335,18 +332,18 @@ namespace Motion_Project
                         string dataToWrite = "";
                         for (int j = 0; j < ResizedData.GetLength(0); j++)
                         {
-                            for (int i = 0; i < ResizedData.GetLength(1); i++)
+                            for (int i = 0; i < 1; i++)
                             {
-                                dataToWrite += ResizedData[i, j] + " ";
+                                dataToWrite += ResizedData[j, i] + " ";
                             }
                             dataToWrite += "\r\n";
-                            File.WriteAllText(dir + Path.GetFileName(pathToParse) + "Parsed", dataToWrite);
+                            File.WriteAllText(dir +"\\"+ Path.GetFileName(pathToParse), dataToWrite);
                         }
 
-                    }*/
+                    }
 
                 
-            }
+                }
         }
     }
 }
