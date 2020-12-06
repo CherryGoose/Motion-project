@@ -247,8 +247,8 @@ namespace Motion_Project
 
         private void ResizeDataButton_Click(object sender, EventArgs e)
         {
-            string[] files = Directory.GetFiles("C:\\Users\\saret\\OneDrive\\Рабочий стол\\Arduino\\Motion Project" +
-                "\\bin\\Debug\\Files\\Правая рука вверх с поворотом сидя 23-24-45", "*");
+            string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45";
+            string[] files = Directory.GetFiles(pathToData, "*");
             foreach (string pathToParse in files)
             {
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
@@ -310,8 +310,7 @@ namespace Motion_Project
                         }
                     }
                 }
-                string dir = "C:\\Users\\saret\\OneDrive\\Рабочий стол\\Arduino\\Motion Project" +
-                    "\\bin\\Debug\\Files\\Правая рука вверх с поворотом сидя 23-24-45" + "Parsed";
+                string dir = pathToData + "\\Parsed";
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
                 else
