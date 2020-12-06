@@ -274,8 +274,7 @@ namespace Motion_Project
                     }
                 }
                 double[,] ResizedData = new double[2000, 14];
-                int PointsLength = ParsedString.GetLength(0);
-                PointsLength = ResizedData.GetLength(0) / PointsLength;
+                int PointsLength = ResizedData.GetLength(0) / ParsedString.GetLength(0);
                 for (int i = 0; i < ParsedString.GetLength(0) - 1; i++)
                 {
                     for (int j = 0; j < ParsedString.GetLength(1) - 1; j++)
@@ -291,6 +290,10 @@ namespace Motion_Project
                             curValue += curInc;
                             curResizedInd++;
                         }
+                        if (i > ParsedString.GetLength(0) * PointsLength)
+                        {
+                            ResizedData[i, j] = ParsedString[ParsedString.GetLength(0) * PointsLength, j];
+                        }
                     }
                 }
                 string dir = pathToData + " Parsed";
@@ -299,7 +302,7 @@ namespace Motion_Project
                 StringBuilder builder = new StringBuilder();
                 for (int j = 0; j < ResizedData.GetLength(0); j++)
                 {
-                    for (int i = 0; i < ResizedData.GetLength(1); i++)
+                    for (int i = 0; i < 1; i++)
                     {
                         builder.Append(ResizedData[j, i]);
                         builder.Append(" ");
