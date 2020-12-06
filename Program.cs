@@ -16,7 +16,7 @@ namespace Motion_Project
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SelialReader());
+            Application.Run(new SerialReader());
         }
     }
 }

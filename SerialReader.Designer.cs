@@ -1,6 +1,6 @@
 ﻿namespace Motion_Project
 {
-    partial class SelialReader
+    partial class SerialReader
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -420,7 +420,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "SelialReader";
             this.Text = "Serial Reader";
-            this.Load += new System.EventHandler(this.SelialReader_Load);
+            this.Load += new System.EventHandler(this.SerialReader_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Motion_Project
 {
-    public partial class SelialReader : Form
+    public partial class SerialReader : Form
     {
         SerialPort[] port = new SerialPort[1];
         string pathtof;
@@ -19,8 +19,9 @@ namespace Motion_Project
         int fileNum = 0;
         string prevFileName = "";
         string fullData = ";COM3;\n;COM4;";
+        int timeEllapsed = 0;
 
-        public SelialReader()
+        public SerialReader()
         {
             InitializeComponent();
             pathtof = Directory.GetCurrentDirectory();
@@ -30,10 +31,11 @@ namespace Motion_Project
         }
 
 
-        private void SelialReader_Load(object sender, EventArgs e)
+        private void SerialReader_Load(object sender, EventArgs e)
         {
             SetupControls();
         }
+
         private void SetupControls()
         {
             ClosePort.Enabled = false;
@@ -58,7 +60,6 @@ namespace Motion_Project
             StopBits.SelectedIndex = 0;
             BaudBox.SelectedIndex = 9;
             DataBits.SelectedIndex = 0;
-            // TerminationBox.SelectedIndex = 0;
         }
 
 
@@ -67,6 +68,7 @@ namespace Motion_Project
             Invoke(new EventHandler(
                 delegate
                 {
+                    timeEllapsed++;
                     bool allSensorsIdle = true;
                     for (int i = 0; i < port.Length; i++)
                     {
@@ -98,7 +100,7 @@ namespace Motion_Project
                         if (!data.Contains("Split"))
                         {
                             allSensorsIdle = false;
-                            data = data.Replace("\r\n", " " + port[i].PortName + "\r\n");
+                            data = data.Replace("\r\n", "Ellapsed:" + timeEllapsed + " " + port[i].PortName + "\r\n");
                             string signature = ";" + port[i].PortName + ";";
                             data += signature;
                             fullData = fullData.Replace(signature, data);
@@ -116,6 +118,7 @@ namespace Motion_Project
                     }
                     if (allSensorsIdle)
                     {
+                        timeEllapsed = 0;
                         labelWritingDone.Text = "STANDBY";
                         fullData = ";COM3;\n;COM4;";
                         Filename = fileNum.ToString();
@@ -141,37 +144,7 @@ namespace Motion_Project
 
         private void Send_Click(object sender, EventArgs e)
         {
-            /*  string lineTermination = string.Empty;
 
-              if (!port.IsOpen)
-              {
-                  rtbDisplay.SelectionColor = Color.Red;
-                  rtbDisplay.AppendText("Error: Not connected to Port! Establish connection first.\n");
-                    rtbDisplay.ScrollToCaret();
-                  return;
-              }
-
-              rtbDisplay.SelectionColor = Color.Green;
-              switch (TerminationBox.SelectedIndex)
-              {
-                  case 0:
-                      lineTermination = string.Empty;
-                      break;
-                  case 1:
-                      lineTermination = "\n";
-                      break;
-                  case 2:
-                      lineTermination = "\r";
-                      break;
-                  case 3:
-                      lineTermination = "\n\r";
-                      break;
-                  default:
-                      break;
-              }
-              rtbDisplay.AppendText("TX: " + SendText.Text + "\n");
-              port.Write(SendText.Text + lineTermination);
-              rtbDisplay.ScrollToCaret();*/
         }
 
         private void OpenPort_Click(object sender, EventArgs e)
@@ -209,7 +182,6 @@ namespace Motion_Project
                     rtbDisplay.ScrollToCaret();
                 }
             }
-
         }
 
         private void WriteToFile_Click(object sender, EventArgs e)
@@ -222,6 +194,7 @@ namespace Motion_Project
             }
             else
             {
+                timeEllapsed = 0;
                 WTF = true;
                 WriteLabel.Text = "Writing";
             }
@@ -256,6 +229,8 @@ namespace Motion_Project
             foreach (string pathToParse in files)
             {
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
+                double[,] ResizedData = new double[2000, 14];
+                int PointsLength = ResizedData.GetLength(0) / curFileToResize.GetLength(0);
                 double[,] ParsedString = new double[curFileToResize.Length, 14];
                 for (int i = 0; i < curFileToResize.Length; i++)
                 {
@@ -275,8 +250,6 @@ namespace Motion_Project
                         ParsedString[i, j] = double.Parse(a[j], CultureInfo.InvariantCulture);
                     }
                 }
-                double[,] ResizedData = new double[2000, 14];
-                int PointsLength = ResizedData.GetLength(0) / ParsedString.GetLength(0); 
                 for (int i = 0; i < ParsedString.GetLength(0) - 1; i++)
                 {
                     for (int j = 0; j < ParsedString.GetLength(1) - 1; j++)
@@ -319,6 +292,5 @@ namespace Motion_Project
             }
             resizeLabel.Text = "Resizing done!";
         }
-
     }
 }
