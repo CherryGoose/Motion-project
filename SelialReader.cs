@@ -5,6 +5,7 @@ using System.IO.Ports;
 using System.IO;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Motion_Project
 {
@@ -315,16 +316,17 @@ namespace Motion_Project
                     Directory.CreateDirectory(dir);
                 else
                 {
-                    string dataToWrite = "";
+                    StringBuilder builder = new StringBuilder();
                     for (int j = 0; j < ResizedData.GetLength(0); j++)
                     {
                         for (int i = 0; i < ResizedData.GetLength(1); i++)
                         {
-                            dataToWrite += ResizedData[j, i] + " ";
+                            builder.Append(ResizedData[j, i]);
+                            builder.Append(" ");
                         }
-                        dataToWrite += "\r\n";
-                        File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), dataToWrite);
+                        builder.Append("\r\n");
                     }
+                    File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), builder.ToString());
                 }
             }
         }
