@@ -283,7 +283,7 @@ namespace Motion_Project
                         ResizedData[i, j] = 777;
                     }
                 }
-                for (int j = 0; j < ResizedData.GetLength(1); j++)
+                for (int j = 0; j < 1; j++)
                 {
                     int parsedSTRCounter = 0;
                     double nextValue = 0;
@@ -295,13 +295,8 @@ namespace Motion_Project
                             ResizedData[i, j] = ParsedString[parsedSTRCounter, j];
                             continue;
                         }
-                        double Val = Math.Abs(ParsedString[parsedSTRCounter, j] > ParsedString[(parsedSTRCounter + 1), j] ?
-                            ParsedString[parsedSTRCounter, j] - ParsedString[(parsedSTRCounter + 1), j]
-                            : ParsedString[(parsedSTRCounter + 1), j] - ParsedString[parsedSTRCounter, j]);
-                        int signVal;
-                        if (ParsedString[parsedSTRCounter, j] < ParsedString[(parsedSTRCounter + 1), j])
-                            signVal = 1;
-                        else signVal = -1;
+                        double Val = Math.Abs(ParsedString[parsedSTRCounter, j] - ParsedString[(parsedSTRCounter + 1), j]);
+                        int signVal = ParsedString[parsedSTRCounter, j] < ParsedString[(parsedSTRCounter + 1), j] ? 1 : -1;
                         nextValue += signVal * Val / PointsLength;
                         ResizedData[i, j] = Math.Round(nextValue, 4);
                         if (parsedSTRCounter * PointsLength == i && parsedSTRCounter < ParsedString.GetLength(0))
@@ -318,7 +313,7 @@ namespace Motion_Project
                 StringBuilder builder = new StringBuilder();
                 for (int j = 0; j < ResizedData.GetLength(0); j++)
                 {
-                    for (int i = 0; i < ResizedData.GetLength(1); i++)
+                    for (int i = 0; i < 1; i++)
                     {
                         builder.Append(ResizedData[j, i]);
                         builder.Append(" ");
