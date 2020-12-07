@@ -222,66 +222,64 @@ namespace Motion_Project
         }
 
 
-        public class dataPoint 
+        public class dataPoint
         {
-            public double aX;
-            public double aY;
-            public double aZ;
-            public double vX;
-            public double vY;
-            public double vZ;
-            public double pX;
-            public double pY;
-            public double pZ;
-            public double wQ;
-            public double xQ;
-            public double yQ;
-            public double zQ;
-            public int time;
-            public int comPort;
+            public double[] data;
+
+
             public dataPoint(string dataLine) 
             {
                 string[] a = dataLine.Split('|');
-                aX= double.Parse(a[0], CultureInfo.InvariantCulture);
-                aY = double.Parse(a[1], CultureInfo.InvariantCulture);
-                aZ = double.Parse(a[2], CultureInfo.InvariantCulture);
-                vX = double.Parse(a[3], CultureInfo.InvariantCulture);
-                vY = double.Parse(a[4], CultureInfo.InvariantCulture);
-                vZ = double.Parse(a[5], CultureInfo.InvariantCulture);
-                pX = double.Parse(a[6], CultureInfo.InvariantCulture);
-                pY = double.Parse(a[7], CultureInfo.InvariantCulture);
-                pZ = double.Parse(a[8], CultureInfo.InvariantCulture);
-                wQ = double.Parse(a[9], CultureInfo.InvariantCulture);
-                xQ = double.Parse(a[10], CultureInfo.InvariantCulture);
-                yQ = double.Parse(a[11], CultureInfo.InvariantCulture);
-                zQ = double.Parse(a[12], CultureInfo.InvariantCulture);
-                time = int.Parse(a[13], CultureInfo.InvariantCulture);
-                comPort = int.Parse(a[14], CultureInfo.InvariantCulture);
-        }
+                data = new double[a.Length];
+                for (int i = 0; i < a.Length; i++)
+                {
+                        a[i]=a[i].Replace(",", ".");
+                    data[i]= double.Parse(a[i],NumberStyles.Any, CultureInfo.InvariantCulture);
+                }
+                // data point contains values in order: aX, aY ,aZ, vX, vY, vZ, pX, pY, pZ, wQ, xQ, yQ, zQ, time, comPort;
+                
+                }
           
+
         }
 
-        public dataPoint MidPoint(dataPoint first, dataPoint second, int magnitude)
+        public string MidPoint(dataPoint first, dataPoint second, int magnitude)
         {
-            string outString = "";
-            outString  += (first.aX - second.aX) / magnitude +"|";
-            outString += (first.aY - second.aY) / magnitude + "|";
-            outString += (first.aZ - second.aZ) / magnitude + "|";
+            StringBuilder outString = new StringBuilder();
+            outString.Append(Math.Round((second.data[0] - first.data[0]) / magnitude, 5).ToString() + "|");
+            outString.Append(Math.Round((second.data[1] - first.data[1]) / magnitude,5).ToString() + "|");
+            outString.Append(Math.Round((second.data[2] - first.data[2]) / magnitude, 5).ToString() + "|");
 
-            outString += (first.vX - second.vX) / magnitude + "|";
-            outString += (first.vY - second.vY) / magnitude + "|";
-            outString += (first.vZ - second.vZ) / magnitude + "|";
+            outString.Append(Math.Round((second.data[3] - first.data[3]) / magnitude, 5).ToString() + "|");
+            outString.Append(Math.Round((second.data[4] - first.data[4]) / magnitude, 5).ToString() + "|");
+            outString.Append(Math.Round((second.data[5] - first.data[5]) / magnitude, 5).ToString() + "|");
 
-            outString += (first.pX - second.pX) / magnitude + "|";
-            outString += (first.pY - second.pY) / magnitude + "|";
-            outString += (first.pZ - second.pZ) / magnitude + "|";
+            outString.Append(Math.Round((second.data[6] - first.data[6]) / magnitude, 5).ToString() + "|");
+            outString.Append(Math.Round((second.data[7] - first.data[7]) / magnitude, 5).ToString() + "|");
+            outString.Append(Math.Round((second.data[8] - first.data[8]) / magnitude, 5).ToString() + "|");
 
-            outString += (first.wQ - second.wQ) / magnitude + "|";
-            outString += (first.xQ - second.xQ) / magnitude + "|";
-            outString += (first.yQ - second.yQ) / magnitude + "|";
-            outString += (first.zQ - second.zQ) / magnitude + "|";
-            dataPoint result = new dataPoint(outString);
-            return result;
+            outString.Append(Math.Round((second.data[9] - first.data[9]) / magnitude, 5).ToString() + "|");
+            outString.Append(Math.Round((second.data[10] - first.data[10]) / magnitude, 5).ToString() + "|");
+            outString.Append(Math.Round((second.data[11] - first.data[11]) / magnitude, 5).ToString() + "|");
+            outString.Append(Math.Round((second.data[12] - first.data[12]) / magnitude, 5).ToString() + "|");
+
+            outString.Append(first.data[13]+"|");
+            outString.Append(first.data[14]);
+            return outString.ToString();
+        }
+        public string dataSumm(string first, string second) 
+        {
+            StringBuilder outString = new StringBuilder();
+            dataPoint f = new dataPoint(first);
+            dataPoint s = new dataPoint(second);
+            for (int i = 0; i < f.data.Length - 2; i++)
+            {
+                outString.Append(f.data[i] + s.data[i]+"|");
+            }
+            outString.Append(f.data[13] + "|");
+            outString.Append(f.data[14]);
+
+            return outString.ToString();
         }
 
         private void ResizeDataButton_Click(object sender, EventArgs e)
@@ -292,10 +290,11 @@ namespace Motion_Project
             foreach (string pathToParse in files)
             {
                 List<dataPoint> fileDataPoints = new List<dataPoint>();
-                List<dataPoint> resizedDataPoints = new List<dataPoint>();
+                List<dataPoint> COM3DataPoints = new List<dataPoint>();
+                List<dataPoint> COM4DataPoints = new List<dataPoint>();
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
                 double[,] ResizedData = new double[2000, 14];
-                int PointsLength = ResizedData.GetLength(0) / curFileToResize.GetLength(0);
+                int PointsLength = 2000 / curFileToResize.GetLength(0);
                 double[,] ParsedString = new double[curFileToResize.Length, 14];
                 for (int i = 0; i < curFileToResize.Length; i++)
                 {
@@ -303,29 +302,50 @@ namespace Motion_Project
                     {
                         continue;
                     }
-                    curFileToResize[i] = curFileToResize[i].Replace("COM", "");
+                    curFileToResize[i] = curFileToResize[i].Replace("COM", "1 ");
                     curFileToResize[i] = curFileToResize[i].Replace(" ", ",");
                     curFileToResize[i] = curFileToResize[i].Replace(",", "|");
+                    
                     string[] a = curFileToResize[i].Split('|');
-                    if (a.Length < ParsedString.GetLength(1) || a.Length > ParsedString.GetLength(1))
+                    if (a.Length < ParsedString.GetLength(1)+1 || a.Length > ParsedString.GetLength(1)+1)
                     {
                         continue;
                     }
                     fileDataPoints.Add(new dataPoint(curFileToResize[i])); 
                 }
-
-                for (int i = 0; i < fileDataPoints.Count- 1; i++)
+                //its before after this line
+                for (int i = 0; i < fileDataPoints.Count-1; i++)
                 {
-
-                    for (int j = 0; j < ParsedString.GetLength(1) - 1; j++)
+                    if (fileDataPoints[i].data[14] == 3)
                     {
-                        resizedDataPoints.Add(fileDataPoints[i]);
-                        for (int k = 0; k < PointsLength; k++)
+                        COM3DataPoints.Add(fileDataPoints[i]);
+                    }
+                    if (fileDataPoints[i].data[14] == 3 && fileDataPoints[i + 1].data[14] == 3)
+                    {
+                        string step = MidPoint(fileDataPoints[i], fileDataPoints[i + 1], PointsLength);
+                        string CurData = dataSumm(MidPoint(fileDataPoints[i], fileDataPoints[i], 1), step);
+                        for (int k = 0; k < PointsLength - 1; k++)
                         {
-                            resizedDataPoints.Add(MidPoint(fileDataPoints[i+k], fileDataPoints[i + 1+k],PointsLength));
+                            CurData = dataSumm(MidPoint(new dataPoint(CurData), new dataPoint(step), PointsLength), step);
+                            COM3DataPoints.Add(new dataPoint(dataSumm(CurData, step)));
+                        }
+                    }
+                    if (fileDataPoints[i].data[14] == 4)
+                    {
+                        COM4DataPoints.Add(fileDataPoints[i]);
+                    }
+                    if (fileDataPoints[i].data[14] == 4 && fileDataPoints[i + 1].data[14] == 4)
+                    {
+                        string step = MidPoint(fileDataPoints[i], fileDataPoints[i + 1], PointsLength);
+                        string CurData = dataSumm(MidPoint(fileDataPoints[i], fileDataPoints[i],1), step);
+                        for (int k = 0; k < PointsLength - 1; k++)
+                        {
+                            CurData = dataSumm(MidPoint(new dataPoint(CurData), new dataPoint(step), PointsLength), step);
+                            COM4DataPoints.Add(new dataPoint(dataSumm(CurData, step)));
                         }
                     }
                 }
+                //its fine after this line
                 int leftoverData = 2000 % (ParsedString.GetLength(0) - 1);
                 for (int i = ResizedData.GetLength(0) - leftoverData; i < 2000; i++)
                 {
