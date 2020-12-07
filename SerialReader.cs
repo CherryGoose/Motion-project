@@ -247,39 +247,24 @@ namespace Motion_Project
         public string MidPoint(dataPoint first, dataPoint second, int magnitude)
         {
             StringBuilder outString = new StringBuilder();
-            outString.Append(Math.Round((second.data[0] - first.data[0]) / magnitude, 5).ToString() + "|");
-            outString.Append(Math.Round((second.data[1] - first.data[1]) / magnitude,5).ToString() + "|");
-            outString.Append(Math.Round((second.data[2] - first.data[2]) / magnitude, 5).ToString() + "|");
-
-            outString.Append(Math.Round((second.data[3] - first.data[3]) / magnitude, 5).ToString() + "|");
-            outString.Append(Math.Round((second.data[4] - first.data[4]) / magnitude, 5).ToString() + "|");
-            outString.Append(Math.Round((second.data[5] - first.data[5]) / magnitude, 5).ToString() + "|");
-
-            outString.Append(Math.Round((second.data[6] - first.data[6]) / magnitude, 5).ToString() + "|");
-            outString.Append(Math.Round((second.data[7] - first.data[7]) / magnitude, 5).ToString() + "|");
-            outString.Append(Math.Round((second.data[8] - first.data[8]) / magnitude, 5).ToString() + "|");
-
-            outString.Append(Math.Round((second.data[9] - first.data[9]) / magnitude, 5).ToString() + "|");
-            outString.Append(Math.Round((second.data[10] - first.data[10]) / magnitude, 5).ToString() + "|");
-            outString.Append(Math.Round((second.data[11] - first.data[11]) / magnitude, 5).ToString() + "|");
-            outString.Append(Math.Round((second.data[12] - first.data[12]) / magnitude, 5).ToString() + "|");
-
+            for (int i = 0; i < first.data.Length - 2; i++)
+            {
+                outString.Append(Math.Round((second.data[i] - first.data[i]) / magnitude, 5).ToString() + "|");
+            }
             outString.Append(first.data[13]+"|");
             outString.Append(first.data[14]);
             return outString.ToString();
         }
 
-        public string dataSumm(string first, string second) 
+        public string dataSumm(dataPoint first, dataPoint second) 
         {
             StringBuilder outString = new StringBuilder();
-            dataPoint f = new dataPoint(first);
-            dataPoint s = new dataPoint(second);
-            for (int i = 0; i < f.data.Length - 2; i++)
+            for (int i = 0; i < first.data.Length - 2; i++)
             {
-                outString.Append(f.data[i] + s.data[i]+"|");
+                outString.Append(first.data[i] + second.data[i]+"|");
             }
-            outString.Append(f.data[13] + "|");
-            outString.Append(f.data[14]);
+            outString.Append(first.data[13] + "|");
+            outString.Append(first.data[14]);
 
             return outString.ToString();
         }
@@ -324,12 +309,13 @@ namespace Motion_Project
                     }
                     if (fileDataPoints[i].data[14] == 3 && fileDataPoints[i + 1].data[14] == 3)
                     {
-                        string step = MidPoint(fileDataPoints[i], fileDataPoints[i + 1], PointsLength);
-                        string CurData = dataSumm(MidPoint(fileDataPoints[i], fileDataPoints[i], 1), step);
+                        dataPoint st = new dataPoint(MidPoint(fileDataPoints[i], fileDataPoints[i + 1], PointsLength));
+                        dataPoint CurData = new dataPoint(fileDataPoints[i].data);
                         for (int k = 0; k < PointsLength - 1; k++)
                         {
-                            CurData = dataSumm(MidPoint(new dataPoint(CurData), new dataPoint(step), PointsLength), step);
-                            COM3DataPoints.Add(new dataPoint(dataSumm(CurData, step)));
+                            dataPoint temp = new dataPoint(dataSumm(CurData, st));
+                            COM3DataPoints.Add(temp);
+                            CurData = new dataPoint(temp.data);
                         }
                     }
                     if (fileDataPoints[i].data[14] == 4)
@@ -338,12 +324,13 @@ namespace Motion_Project
                     }
                     if (fileDataPoints[i].data[14] == 4 && fileDataPoints[i + 1].data[14] == 4)
                     {
-                        string step = MidPoint(fileDataPoints[i], fileDataPoints[i + 1], PointsLength);
-                        string CurData = dataSumm(MidPoint(fileDataPoints[i], fileDataPoints[i],1), step);
+                        dataPoint st = new dataPoint(MidPoint(fileDataPoints[i], fileDataPoints[i + 1], PointsLength));
+                        dataPoint CurData = new dataPoint(fileDataPoints[i].data);
                         for (int k = 0; k < PointsLength - 1; k++)
                         {
-                            CurData = dataSumm(MidPoint(new dataPoint(CurData), new dataPoint(step), PointsLength), step);
-                            COM4DataPoints.Add(new dataPoint(dataSumm(CurData, step)));
+                            dataPoint temp = new dataPoint(dataSumm(CurData, st));
+                            COM4DataPoints.Add(temp);
+                            CurData = new dataPoint(temp.data);
                         }
                     }
                 }
