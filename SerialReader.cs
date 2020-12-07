@@ -226,21 +226,22 @@ namespace Motion_Project
         {
             public double[] data;
 
-
             public dataPoint(string dataLine) 
             {
                 string[] a = dataLine.Split('|');
                 data = new double[a.Length];
                 for (int i = 0; i < a.Length; i++)
                 {
-                        a[i]=a[i].Replace(",", ".");
-                    data[i]= double.Parse(a[i],NumberStyles.Any, CultureInfo.InvariantCulture);
+                    a[i] = a[i].Replace(",", ".");
+                    data[i] = double.Parse(a[i],NumberStyles.Any, CultureInfo.InvariantCulture);
                 }
-                // data point contains values in order: aX, aY ,aZ, vX, vY, vZ, pX, pY, pZ, wQ, xQ, yQ, zQ, time, comPort;
-                
-                }
-          
+                // data point contains values in order: aX, aY ,aZ, vX, vY, vZ, pX, pY, pZ, wQ, xQ, yQ, zQ, time, comPort;                
+            }
 
+            public dataPoint(double[] data)
+            {
+                this.data = data;
+            }
         }
 
         public string MidPoint(dataPoint first, dataPoint second, int magnitude)
@@ -267,6 +268,7 @@ namespace Motion_Project
             outString.Append(first.data[14]);
             return outString.ToString();
         }
+
         public string dataSumm(string first, string second) 
         {
             StringBuilder outString = new StringBuilder();
@@ -318,7 +320,7 @@ namespace Motion_Project
                 {
                     if (fileDataPoints[i].data[14] == 3)
                     {
-                        COM3DataPoints.Add(fileDataPoints[i]);
+                        COM3DataPoints.Add(new dataPoint(fileDataPoints[i].data));
                     }
                     if (fileDataPoints[i].data[14] == 3 && fileDataPoints[i + 1].data[14] == 3)
                     {
@@ -332,7 +334,7 @@ namespace Motion_Project
                     }
                     if (fileDataPoints[i].data[14] == 4)
                     {
-                        COM4DataPoints.Add(fileDataPoints[i]);
+                        COM4DataPoints.Add(new dataPoint(fileDataPoints[i].data));
                     }
                     if (fileDataPoints[i].data[14] == 4 && fileDataPoints[i + 1].data[14] == 4)
                     {
