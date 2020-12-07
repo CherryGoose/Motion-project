@@ -221,6 +221,69 @@ namespace Motion_Project
             }
         }
 
+
+        public class dataPoint 
+        {
+            public double aX;
+            public double aY;
+            public double aZ;
+            public double vX;
+            public double vY;
+            public double vZ;
+            public double pX;
+            public double pY;
+            public double pZ;
+            public double wQ;
+            public double xQ;
+            public double yQ;
+            public double zQ;
+            public int time;
+            public int comPort;
+            public dataPoint(string dataLine) 
+            {
+                string[] a = dataLine.Split('|');
+                aX= double.Parse(a[0], CultureInfo.InvariantCulture);
+                aY = double.Parse(a[1], CultureInfo.InvariantCulture);
+                aZ = double.Parse(a[2], CultureInfo.InvariantCulture);
+                vX = double.Parse(a[3], CultureInfo.InvariantCulture);
+                vY = double.Parse(a[4], CultureInfo.InvariantCulture);
+                vZ = double.Parse(a[5], CultureInfo.InvariantCulture);
+                pX = double.Parse(a[6], CultureInfo.InvariantCulture);
+                pY = double.Parse(a[7], CultureInfo.InvariantCulture);
+                pZ = double.Parse(a[8], CultureInfo.InvariantCulture);
+                wQ = double.Parse(a[9], CultureInfo.InvariantCulture);
+                xQ = double.Parse(a[10], CultureInfo.InvariantCulture);
+                yQ = double.Parse(a[11], CultureInfo.InvariantCulture);
+                zQ = double.Parse(a[12], CultureInfo.InvariantCulture);
+                time = int.Parse(a[13], CultureInfo.InvariantCulture);
+                comPort = int.Parse(a[14], CultureInfo.InvariantCulture);
+        }
+          
+        }
+
+        public dataPoint MidPoint(dataPoint first, dataPoint second, int magnitude)
+        {
+            string outString = "";
+            outString  += (first.aX - second.aX) / magnitude +"|";
+            outString += (first.aY - second.aY) / magnitude + "|";
+            outString += (first.aZ - second.aZ) / magnitude + "|";
+
+            outString += (first.vX - second.vX) / magnitude + "|";
+            outString += (first.vY - second.vY) / magnitude + "|";
+            outString += (first.vZ - second.vZ) / magnitude + "|";
+
+            outString += (first.pX - second.pX) / magnitude + "|";
+            outString += (first.pY - second.pY) / magnitude + "|";
+            outString += (first.pZ - second.pZ) / magnitude + "|";
+
+            outString += (first.wQ - second.wQ) / magnitude + "|";
+            outString += (first.xQ - second.xQ) / magnitude + "|";
+            outString += (first.yQ - second.yQ) / magnitude + "|";
+            outString += (first.zQ - second.zQ) / magnitude + "|";
+            dataPoint result = new dataPoint(outString);
+            return result;
+        }
+
         private void ResizeDataButton_Click(object sender, EventArgs e)
         {
             string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45";
@@ -228,6 +291,8 @@ namespace Motion_Project
             resizeLabel.Text = "";
             foreach (string pathToParse in files)
             {
+                List<dataPoint> fileDataPoints = new List<dataPoint>();
+                List<dataPoint> resizedDataPoints = new List<dataPoint>();
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
                 double[,] ResizedData = new double[2000, 14];
                 int PointsLength = ResizedData.GetLength(0) / curFileToResize.GetLength(0);
@@ -240,30 +305,24 @@ namespace Motion_Project
                     }
                     curFileToResize[i] = curFileToResize[i].Replace("COM", "");
                     curFileToResize[i] = curFileToResize[i].Replace(" ", ",");
-                    string[] a = curFileToResize[i].Split(',');
+                    curFileToResize[i] = curFileToResize[i].Replace(",", "|");
+                    string[] a = curFileToResize[i].Split('|');
                     if (a.Length < ParsedString.GetLength(1) || a.Length > ParsedString.GetLength(1))
                     {
                         continue;
                     }
-                    for (int j = 0; j < a.Length; j++)
-                    {
-                        ParsedString[i, j] = double.Parse(a[j], CultureInfo.InvariantCulture);
-                    }
+                    fileDataPoints.Add(new dataPoint(curFileToResize[i])); 
                 }
-                for (int i = 0; i < ParsedString.GetLength(0) - 1; i++)
+
+                for (int i = 0; i < fileDataPoints.Count- 1; i++)
                 {
+
                     for (int j = 0; j < ParsedString.GetLength(1) - 1; j++)
                     {
-                        double curValue = ParsedString[i, j];
-                        double nextValue = ParsedString[i + 1, j];
-                        double curInc = (nextValue - curValue) / PointsLength;
-
-                        int curResizedInd = i * PointsLength;
+                        resizedDataPoints.Add(fileDataPoints[i]);
                         for (int k = 0; k < PointsLength; k++)
                         {
-                            ResizedData[curResizedInd, j] = Math.Round(curValue, 4);
-                            curValue += curInc;
-                            curResizedInd++;
+                            resizedDataPoints.Add(MidPoint(fileDataPoints[i+k], fileDataPoints[i + 1+k],PointsLength));
                         }
                     }
                 }
