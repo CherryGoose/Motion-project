@@ -6,6 +6,7 @@ using System.IO;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
+using MathNet.Numerics.Statistics;
 
 namespace Motion_Project
 {
@@ -280,8 +281,6 @@ namespace Motion_Project
                 List<dataPoint> COM3DataPoints = new List<dataPoint>();
                 List<dataPoint> COM4DataPoints = new List<dataPoint>();
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
-                double[,] ResizedData = new double[2000, 14];
-                int PointsLength = 2000 / curFileToResize.GetLength(0);
                 double[,] ParsedString = new double[curFileToResize.Length, 14];
                 for (int i = 0; i < curFileToResize.Length; i++)
                 {
@@ -292,16 +291,29 @@ namespace Motion_Project
                     curFileToResize[i] = curFileToResize[i].Replace("COM", "1 ");
                     curFileToResize[i] = curFileToResize[i].Replace(" ", ",");
                     curFileToResize[i] = curFileToResize[i].Replace(",", "|");
-                    
+
                     string[] a = curFileToResize[i].Split('|');
-                    if (a.Length < ParsedString.GetLength(1)+1 || a.Length > ParsedString.GetLength(1)+1)
+                    if (a.Length < ParsedString.GetLength(1) + 1 || a.Length > ParsedString.GetLength(1) + 1)
                     {
                         continue;
                     }
-                    fileDataPoints.Add(new dataPoint(curFileToResize[i])); 
+                    fileDataPoints.Add(new dataPoint(curFileToResize[i]));
                 }
-                //its before after this line
-                for (int i = 0; i < fileDataPoints.Count-1; i++)
+
+                //clear all but com3 data
+                for (int i = 0; i < fileDataPoints.Count; i++)
+                {
+                    int index;
+                    if (fileDataPoints.Exists(x => x.data[14] == 4))
+                    {
+                        index = fileDataPoints.FindIndex(x => x.data[14] == 4);
+                        fileDataPoints.RemoveAt(index);
+                    }
+                }
+
+                int PointsLength = 1000 / fileDataPoints.Count;
+
+                for (int i = 0; i < fileDataPoints.Count - 1; i++)
                 {
                     if (fileDataPoints[i].data[14] == 3)
                     {
@@ -318,47 +330,42 @@ namespace Motion_Project
                             CurData = new dataPoint(temp.data);
                         }
                     }
-                    if (fileDataPoints[i].data[14] == 4)
+               
+                }
+                if (COM3DataPoints.Count < 1000) 
+                { int border = COM3DataPoints.Count;
+                    for (int i = 0; i < 1000 - border; i++)
                     {
-                        COM4DataPoints.Add(new dataPoint(fileDataPoints[i].data));
-                    }
-                    if (fileDataPoints[i].data[14] == 4 && fileDataPoints[i + 1].data[14] == 4)
-                    {
-                        dataPoint st = new dataPoint(MidPoint(fileDataPoints[i], fileDataPoints[i + 1], PointsLength));
-                        dataPoint CurData = new dataPoint(fileDataPoints[i].data);
-                        for (int k = 0; k < PointsLength - 1; k++)
-                        {
-                            dataPoint temp = new dataPoint(dataSumm(CurData, st));
-                            COM4DataPoints.Add(temp);
-                            CurData = new dataPoint(temp.data);
-                        }
+                        dataPoint extraFill = new dataPoint(COM3DataPoints[COM3DataPoints.Count - 1].data);
+                        COM3DataPoints.Add(extraFill);
                     }
                 }
-                //its fine after this line
-                int leftoverData = 2000 % (ParsedString.GetLength(0) - 1);
-                for (int i = ResizedData.GetLength(0) - leftoverData; i < 2000; i++)
-                {
-                    for (int j = 0; j < ResizedData.GetLength(1); j++)
-                    {
-                        ResizedData[i, j] = ParsedString[ParsedString.GetLength(0) - 1, j];
-                    }
-                }
+              
                 string dir = pathToData + " Parsed";
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
                 StringBuilder builder = new StringBuilder();
-                for (int j = 0; j < ResizedData.GetLength(0); j++)
+                for (int i = 0; i < COM3DataPoints.Count; i++)
                 {
-                    for (int i = 0; i < ResizedData.GetLength(1); i++)
+                    for (int j = 0; j < COM3DataPoints[i].data.Length-2; j++)
                     {
-                        builder.Append(ResizedData[j, i]);
-                        builder.Append(" ");
+                        builder.Append(COM3DataPoints[i].data[j].ToString());
+                        builder.Append("|");
                     }
                     builder.Append("\r\n");
                 }
                 File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), builder.ToString());
             }
             resizeLabel.Text = "Resizing done!";
+        }
+
+        private void CorrelButton_Click(object sender, EventArgs e)
+        {
+            string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45 Parsed";
+            string[] files = Directory.GetFiles(pathToData, "*");
+            List<dataPoint> fileDataPoints = new List<dataPoint>();
+            //to do: correl calculation
+
         }
     }
 }
