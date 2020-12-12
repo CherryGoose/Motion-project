@@ -355,17 +355,69 @@ namespace Motion_Project
                     builder.Append("\r\n");
                 }
                 File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), builder.ToString());
+
+                string HorPath = pathToData + " Horrizontal";
+                if (!Directory.Exists(HorPath))
+                    Directory.CreateDirectory(HorPath);
+                StringBuilder HorBuilder = new StringBuilder();
+                for (int j = 0; j< COM3DataPoints[j].data.Length - 2; j++)
+                {
+                    for (int i = 0; i < COM3DataPoints.Count; i++)
+                    {
+                        HorBuilder.Append(COM3DataPoints[i].data[j].ToString());
+                        HorBuilder.Append("|");
+                    }
+                    HorBuilder.Append("\r\n");
+                }
+                File.WriteAllText(HorPath + "\\" + Path.GetFileName(pathToParse), HorBuilder.ToString());
+
             }
             resizeLabel.Text = "Resizing done!";
         }
 
         private void CorrelButton_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45 Parsed";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45 Horrizontal";
             string[] files = Directory.GetFiles(pathToData, "*");
-            List<dataPoint> fileDataPoints = new List<dataPoint>();
-            //to do: correl calculation
+            List<dataPoint> Ax = new List<dataPoint>();
+            List<dataPoint> Ay = new List<dataPoint>();
+            List<dataPoint> Az = new List<dataPoint>();
+            List<dataPoint> Vx = new List<dataPoint>();
+            List<dataPoint> Vy = new List<dataPoint>();
+            List<dataPoint> Vz = new List<dataPoint>();
+            List<dataPoint> Px = new List<dataPoint>();
+            List<dataPoint> Py = new List<dataPoint>();
+            List<dataPoint> Pz = new List<dataPoint>();
+            List<dataPoint> W = new List<dataPoint>();
+            List<dataPoint> Rx = new List<dataPoint>();
+            List<dataPoint> Ry = new List<dataPoint>();
+            List<dataPoint> Rz = new List<dataPoint>();
 
+            foreach (string pathToFile in files)
+            {
+                string[] CurFileToAccess = File.ReadAllLines(pathToFile);
+                for (int i = 0; i < CurFileToAccess.Length; i++)
+                {
+                    CurFileToAccess[i] = CurFileToAccess[i].Remove(CurFileToAccess[i].Length - 1);
+                    if (CurFileToAccess[i] != "\r\n")
+                    {
+                        Ax.Add(new dataPoint(CurFileToAccess[0]));
+                        Ax.Add(new dataPoint(CurFileToAccess[1]));
+                        Ax.Add(new dataPoint(CurFileToAccess[2]));
+                        Ax.Add(new dataPoint(CurFileToAccess[3]));
+                        Ax.Add(new dataPoint(CurFileToAccess[4]));
+                        Ax.Add(new dataPoint(CurFileToAccess[5]));
+                        Ax.Add(new dataPoint(CurFileToAccess[6]));
+                        Ax.Add(new dataPoint(CurFileToAccess[7]));
+                        Ax.Add(new dataPoint(CurFileToAccess[8]));
+                        Ax.Add(new dataPoint(CurFileToAccess[9]));
+                        Ax.Add(new dataPoint(CurFileToAccess[10]));
+                        Ax.Add(new dataPoint(CurFileToAccess[11]));
+                        Ax.Add(new dataPoint(CurFileToAccess[12]));
+                    }
+                }
+            }
+            //to do: correl calculation
         }
     }
 }
