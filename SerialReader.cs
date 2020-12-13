@@ -399,23 +399,20 @@ namespace Motion_Project
                 for (int i = 0; i < CurFileToAccess.Length; i++)
                 {
                     CurFileToAccess[i] = CurFileToAccess[i].Remove(CurFileToAccess[i].Length - 1);
-                    if (CurFileToAccess[i] != "\r\n")
-                    {
-                        Ax.Add(new dataPoint(CurFileToAccess[0]));
-                        Ax.Add(new dataPoint(CurFileToAccess[1]));
-                        Ax.Add(new dataPoint(CurFileToAccess[2]));
-                        Ax.Add(new dataPoint(CurFileToAccess[3]));
-                        Ax.Add(new dataPoint(CurFileToAccess[4]));
-                        Ax.Add(new dataPoint(CurFileToAccess[5]));
-                        Ax.Add(new dataPoint(CurFileToAccess[6]));
-                        Ax.Add(new dataPoint(CurFileToAccess[7]));
-                        Ax.Add(new dataPoint(CurFileToAccess[8]));
-                        Ax.Add(new dataPoint(CurFileToAccess[9]));
-                        Ax.Add(new dataPoint(CurFileToAccess[10]));
-                        Ax.Add(new dataPoint(CurFileToAccess[11]));
-                        Ax.Add(new dataPoint(CurFileToAccess[12]));
-                    }
                 }
+                        Ax.Add(new dataPoint(CurFileToAccess[0]));
+                        Ay.Add(new dataPoint(CurFileToAccess[1])); 
+                        Az.Add(new dataPoint(CurFileToAccess[2]));
+                        Vx.Add(new dataPoint(CurFileToAccess[3]));
+                        Vy.Add(new dataPoint(CurFileToAccess[4]));
+                        Vz.Add(new dataPoint(CurFileToAccess[5]));
+                        Px.Add(new dataPoint(CurFileToAccess[6]));
+                        Py.Add(new dataPoint(CurFileToAccess[7]));
+                        Pz.Add(new dataPoint(CurFileToAccess[8]));
+                        W.Add(new dataPoint(CurFileToAccess[9]));
+                        Rx.Add(new dataPoint(CurFileToAccess[10]));
+                        Ry.Add(new dataPoint(CurFileToAccess[11]));
+                        Rz.Add(new dataPoint(CurFileToAccess[12]));
             }
             //to do: correl calculation
         }
