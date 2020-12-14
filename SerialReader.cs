@@ -6,6 +6,7 @@ using System.IO;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using MathNet.Numerics.Statistics;
 
 namespace Motion_Project
@@ -414,7 +415,18 @@ namespace Motion_Project
                         Ry.Add(new dataPoint(CurFileToAccess[11]));
                         Rz.Add(new dataPoint(CurFileToAccess[12]));
             }
-            //to do: correl calculation
-        }
+            List<double> avarageCorrel= new List<double>();
+            for (int j = 0; j < Px.Count - 1; j++)
+            {
+                for (int i = 0; i < Px.Count - 1; i++)
+                {
+                    double correl = Correlation.Pearson(W[j].data, W[i].data);
+                    avarageCorrel.Add(correl);
+                }
+            }
+             double result = System.Linq.Enumerable.Average(avarageCorrel);
+            rtbDisplay.AppendText(result.ToString());
+                //to do: correl calculation
+            }
     }
 }
