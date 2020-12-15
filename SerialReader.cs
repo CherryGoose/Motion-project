@@ -416,17 +416,25 @@ namespace Motion_Project
                         Rz.Add(new dataPoint(CurFileToAccess[12]));
             }
             List<double> avarageCorrel= new List<double>();
+            int sameShit=0;
             for (int j = 0; j < Px.Count - 1; j++)
             {
                 for (int i = 0; i < Px.Count - 1; i++)
                 {
-                    double correl = Correlation.Pearson(W[j].data, W[i].data);
-                    avarageCorrel.Add(correl);
+                    double correlx = Correlation.Pearson(Px[j].data, Px[i].data);
+                    double correly = Correlation.Pearson(Py[j].data, Py[i].data);
+                    double correlz = Correlation.Pearson(Pz[j].data, Pz[i].data);
+                    if (correlx> 0.80 && correly > 0.80 && correlz > 0.85)
+                        {
+                        sameShit++;
+                        }
                 }
+                rtbDisplay.AppendText("i=" + j + " "+sameShit.ToString() + "\r\n");
+                sameShit = 0;
             }
-             double result = System.Linq.Enumerable.Average(avarageCorrel);
-            rtbDisplay.AppendText(result.ToString());
+             //double result = System.Linq.Enumerable.Average(avarageCorrel);
+            
                 //to do: correl calculation
-            }
+        }
     }
 }
