@@ -273,7 +273,7 @@ namespace Motion_Project
 
         private void ResizeDataButton_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\Вынос правой руки вперед сидя к арьянскому лидеру 04.12.20 00-11-17";
             string[] files = Directory.GetFiles(pathToData, "*");
             resizeLabel.Text = "";
             foreach (string pathToParse in files)
@@ -378,7 +378,7 @@ namespace Motion_Project
 
         private void CorrelButton_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45 Horrizontal";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\Вынос правой руки вперед сидя к арьянскому лидеру 04.12.20 00-11-17 Horrizontal";
             string[] files = Directory.GetFiles(pathToData, "*");
             List<dataPoint> Ax = new List<dataPoint>();
             List<dataPoint> Ay = new List<dataPoint>();
@@ -415,26 +415,76 @@ namespace Motion_Project
                         Ry.Add(new dataPoint(CurFileToAccess[11]));
                         Rz.Add(new dataPoint(CurFileToAccess[12]));
             }
-            List<double> avarageCorrel= new List<double>();
-            int sameShit=0;
-            for (int j = 0; j < Px.Count - 1; j++)
+            //int sameShit=0;
+            //for (int j = 0; j < Px.Count - 1; j++)
+            //{
+            //    for (int i = 0; i < Px.Count - 1; i++)
+            //    {
+            //        double correlx = Correlation.Pearson(W[j].data, W[i].data);
+            //        double correly = Correlation.Pearson(W[j].data, W[i].data);
+            //        double correlz = Correlation.Pearson(W[j].data, W[i].data);
+            //            if (correlx> 0.80 && correly > 0.80 && correlz > 0.85)
+            //            {
+            //            sameShit++;
+            //            }
+            //    }
+            //    rtbDisplay.AppendText("i=" + j + " "+sameShit.ToString() + "\r\n");
+            //    sameShit = 0;
+            //}
+
+            dataPoint AvarageX = new dataPoint(new double[1000]);
+            dataPoint AvarageY = new dataPoint(new double[1000]);
+            dataPoint AvarageZ = new dataPoint(new double[1000]);
+
+            for (int i = 0; i < 1000; i++)
             {
-                for (int i = 0; i < Px.Count - 1; i++)
+
+                for (int j = 0; j < Px.Count; j++)
                 {
-                    double correlx = Correlation.Pearson(Px[j].data, Px[i].data);
-                    double correly = Correlation.Pearson(Py[j].data, Py[i].data);
-                    double correlz = Correlation.Pearson(Pz[j].data, Pz[i].data);
-                    if (correlx> 0.80 && correly > 0.80 && correlz > 0.85)
-                        {
-                        sameShit++;
-                        }
+                    AvarageX.data[i] += Ax[j].data[i];
+                    AvarageY.data[i] += Ay[j].data[i];
+                    AvarageZ.data[i] += Az[j].data[i];
                 }
-                rtbDisplay.AppendText("i=" + j + " "+sameShit.ToString() + "\r\n");
-                sameShit = 0;
+                AvarageX.data[i] = AvarageX.data[i] / Px.Count;
+                AvarageY.data[i] = AvarageY.data[i] / Px.Count;
+                AvarageZ.data[i] = AvarageZ.data[i] / Px.Count;
             }
-             //double result = System.Linq.Enumerable.Average(avarageCorrel);
-            
-                //to do: correl calculation
+            dataPoint EuclidX = new dataPoint(new double[1000]);
+            dataPoint EuclidY = new dataPoint(new double[1000]);
+            dataPoint EuclidZ = new dataPoint(new double[1000]);
+
+            for (int i = 0; i < 1000; i++)
+            {
+
+                for (int j = 0; j < Px.Count; j++)
+                {
+                    EuclidX.data[i] += Math.Abs( AvarageX.data[i] - Ax[j].data[i]);
+                    EuclidY.data[i] += Math.Abs( AvarageY.data[i] - Ay[j].data[i]);
+                    EuclidZ.data[i] += Math.Abs( AvarageY.data[i] - Az[j].data[i]);
+                }
+                EuclidX.data[i] = EuclidX.data[i] / Px.Count;
+                EuclidY.data[i] = EuclidY.data[i] / Px.Count;
+                EuclidZ.data[i] = EuclidZ.data[i] / Px.Count;
+            }
+
+
+            string HorPath = pathToData + " Avarage";
+            if (!Directory.Exists(HorPath))
+                Directory.CreateDirectory(HorPath);
+            StringBuilder HorBuilder = new StringBuilder();
+            for (int j = 0; j < EuclidX.data.Length; j++)
+            {
+                    HorBuilder.Append(EuclidX.data[j].ToString());
+                    HorBuilder.Append("|");
+                    HorBuilder.Append(EuclidY.data[j].ToString());
+                    HorBuilder.Append("|");
+                    HorBuilder.Append(EuclidZ.data[j].ToString());
+                    HorBuilder.Append("\r\n");
+            }
+            File.WriteAllText(HorPath + "\\" + Path.GetFileName(pathToData), HorBuilder.ToString());
+
+
+            //to do: correl calculation
         }
     }
 }
