@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using MathNet.Numerics.Statistics;
+using System.Xml;
 
 namespace Motion_Project
 {
@@ -20,7 +21,7 @@ namespace Motion_Project
         bool WTF = false;
         int fileNum = 0;
         string prevFileName = "";
-        string fullData = ";COM3;\n;COM4;";
+        string fullData = ";COM6;\n;";
         int timeEllapsed = 0;
 
         public SerialReader()
@@ -102,11 +103,11 @@ namespace Motion_Project
                         if (!data.Contains("Split"))
                         {
                             allSensorsIdle = false;
-                            data = data.Replace("\r\n", "Ellapsed:" + timeEllapsed + " " + port[i].PortName + "\r\n");
+                            //data = data.Replace("\r\n", "Ellapsed:" + timeEllapsed + " " + port[i].PortName + "\r\n");
                             string signature = ";" + port[i].PortName + ";";
                             data += signature;
                             fullData = fullData.Replace(signature, data);
-                            if (!fullData.Equals(";COM3;\n;COM4;"))
+                            if (!fullData.Equals(";COM6;\n;"))
                             {
                                 labelWritingDone.Text = "WRITING";
                                 File.WriteAllText(pathtof + "\\" + Filename + ".txt", fullData);
@@ -122,7 +123,7 @@ namespace Motion_Project
                     {
                         timeEllapsed = 0;
                         labelWritingDone.Text = "STANDBY";
-                        fullData = ";COM3;\n;COM4;";
+                        fullData = ";COM6;\n;";
                         Filename = fileNum.ToString();
                     }
                 }));
@@ -214,11 +215,17 @@ namespace Motion_Project
                 }
                 else
                 {
-                    curContent = curContent.Replace("\r\n;COM3;", "");
+                    
+                    curContent = curContent.Replace("\r\n;COM6;", "");
                     curContent = curContent.Replace("\r\n;COM4;", "");
                     curContent = curContent.Replace("\r\n\n", "\r\n");
                     curContent = curContent.Trim();
                     File.WriteAllText(pathToCheck, curContent);
+                    string [] sizeFile = File.ReadAllLines(pathToCheck);
+                    if (sizeFile.Length < 10)
+                    {
+                        File.Delete(pathToCheck);
+                    }
                 }
             }
         }
@@ -249,79 +256,191 @@ namespace Motion_Project
         public string MidPoint(dataPoint first, dataPoint second, int magnitude)
         {
             StringBuilder outString = new StringBuilder();
-            for (int i = 0; i < first.data.Length - 2; i++)
+            for (int i = 0; i < first.data.Length; i++)
             {
-                outString.Append(Math.Round((second.data[i] - first.data[i]) / magnitude, 5).ToString() + "|");
+
+                if (i == first.data.Length - 1)
+                {
+                    outString.Append(Math.Round((second.data[i] - first.data[i]) / magnitude, 5).ToString());
+                }
+                else { outString.Append(Math.Round((second.data[i] - first.data[i]) / magnitude, 5).ToString() + "|"); }
             }
-            outString.Append(first.data[13]+"|");
-            outString.Append(first.data[14]);
             return outString.ToString();
         }
 
         public string dataSumm(dataPoint first, dataPoint second) 
         {
             StringBuilder outString = new StringBuilder();
-            for (int i = 0; i < first.data.Length - 2; i++)
+            for (int i = 0; i < first.data.Length; i++)
             {
-                outString.Append(first.data[i] + second.data[i]+"|");
+                if (i == first.data.Length - 1)
+                {
+                    outString.Append(first.data[i] + second.data[i]);
+                }
+                else
+                {
+                    outString.Append(first.data[i] + second.data[i] + "|");
+
+                }
             }
-            outString.Append(first.data[13] + "|");
-            outString.Append(first.data[14]);
-
-            return outString.ToString();
+                return outString.ToString();
         }
+        private void createXmlfiles_button_Click(object sender, EventArgs e)
+        {
+            string pathToData = Environment.CurrentDirectory + "\\Files\\left";
+            string[] files = Directory.GetFiles(pathToData, "*");
+            List<dataPoint> fileDataPoints = new List<dataPoint>();
+            foreach (string pathToParse in files)
+            {
+                string[] curFileToResize = File.ReadAllLines(pathToParse);
+                string ax = "";
+                string ay = "";
+                string az = "";
+                string q = "";
+                string w = "";
+                string s = "";
+                string n = "";
 
+
+                for (int i = 0; i < curFileToResize.Length; i++)
+                {
+                    if (curFileToResize[i] == "" || curFileToResize[i] == ";")
+                    {
+                        continue;
+                    }
+
+                    string[] a = curFileToResize[i].Split(',');
+                    ax += a[0]+",";
+                    ay += a[1] + ",";
+                    az += a[2] + ",";
+                    q += a[3] + ",";
+                    w += a[4] + ",";
+                    s += a[5] + ",";
+                    n += a[6] + ",";
+                    //fileDataPoints.Add(new dataPoint(curFileToResize[i]));
+                }
+                ax += "0";
+                ay += "0";
+                az += "0";
+                q += "0";
+                w += "0";
+                s += "0";
+                n += "0";
+                {
+                    XmlWriterSettings wSettings = new XmlWriterSettings();
+                    wSettings.Indent = true;
+                    wSettings.ConformanceLevel = ConformanceLevel.Fragment;
+                    wSettings.OmitXmlDeclaration = true;
+                    XmlWriter writer = XmlWriter.Create(pathToParse + ".xml", wSettings);
+
+
+                    writer.WriteStartElement("Classes");
+                    writer.WriteAttributeString("lang", "en");
+                    writer.WriteStartElement("Specification");
+                    writer.WriteAttributeString("description", "Эксперимент");
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "1");
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "2");
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "3");
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "4");
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "5");
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "6");
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "7");
+                    writer.WriteEndElement();
+
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Features");
+                    writer.WriteStartElement("Class");
+                    writer.WriteAttributeString("name", "Пользователь 1");
+                    writer.WriteStartElement("Realization");
+
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "1");
+                    writer.WriteAttributeString("value", ax);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "2");
+                    writer.WriteAttributeString("value", ay);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "3");
+                    writer.WriteAttributeString("value", az);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "4");
+                    writer.WriteAttributeString("value", q);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "5");
+                    writer.WriteAttributeString("value", w);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "6");
+                    writer.WriteAttributeString("value", s);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("Feature");
+                    writer.WriteAttributeString("id", "7");
+                    writer.WriteAttributeString("value", n);
+                    writer.WriteEndElement();
+                    //writer.WriteAttributeString("value", ax.ToString());
+                    writer.WriteEndElement();
+                    writer.WriteEndElement();
+                    writer.WriteEndElement();
+                    writer.Flush();
+                    writer.Close();
+                 }
+
+            }
+        }
         private void ResizeDataButton_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\Вынос правой руки вперед сидя к арьянскому лидеру 04.12.20 00-11-17";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\left";
             string[] files = Directory.GetFiles(pathToData, "*");
+            int finalsize = 1000;
             resizeLabel.Text = "";
             foreach (string pathToParse in files)
             {
                 List<dataPoint> fileDataPoints = new List<dataPoint>();
                 List<dataPoint> COM3DataPoints = new List<dataPoint>();
-                List<dataPoint> COM4DataPoints = new List<dataPoint>();
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
-                double[,] ParsedString = new double[curFileToResize.Length, 14];
+                double[,] ParsedString = new double[curFileToResize.Length, 7];
                 for (int i = 0; i < curFileToResize.Length; i++)
                 {
+                   
+                    curFileToResize[i] = curFileToResize[i].Replace("COM", "");
+                    curFileToResize[i] = curFileToResize[i].Replace(";", "");
+                    curFileToResize[i] = curFileToResize[i].Replace(",", "|");
                     if (curFileToResize[i] == "")
                     {
                         continue;
                     }
-                    curFileToResize[i] = curFileToResize[i].Replace("COM", "1 ");
-                    curFileToResize[i] = curFileToResize[i].Replace(" ", ",");
-                    curFileToResize[i] = curFileToResize[i].Replace(",", "|");
-
                     string[] a = curFileToResize[i].Split('|');
-                    if (a.Length < ParsedString.GetLength(1) + 1 || a.Length > ParsedString.GetLength(1) + 1)
-                    {
-                        continue;
-                    }
+                   
                     fileDataPoints.Add(new dataPoint(curFileToResize[i]));
                 }
 
-                //clear all but com3 data
-                for (int i = 0; i < fileDataPoints.Count; i++)
-                {
-                    int index;
-                    if (fileDataPoints.Exists(x => x.data[14] == 4))
-                    {
-                        index = fileDataPoints.FindIndex(x => x.data[14] == 4);
-                        fileDataPoints.RemoveAt(index);
-                    }
-                }
-
-                int PointsLength = 1000 / fileDataPoints.Count;
+                int PointsLength = finalsize / fileDataPoints.Count;
 
                 for (int i = 0; i < fileDataPoints.Count - 1; i++)
                 {
-                    if (fileDataPoints[i].data[14] == 3)
-                    {
-                        COM3DataPoints.Add(new dataPoint(fileDataPoints[i].data));
-                    }
-                    if (fileDataPoints[i].data[14] == 3 && fileDataPoints[i + 1].data[14] == 3)
-                    {
                         dataPoint st = new dataPoint(MidPoint(fileDataPoints[i], fileDataPoints[i + 1], PointsLength));
                         dataPoint CurData = new dataPoint(fileDataPoints[i].data);
                         for (int k = 0; k < PointsLength - 1; k++)
@@ -330,28 +449,30 @@ namespace Motion_Project
                             COM3DataPoints.Add(temp);
                             CurData = new dataPoint(temp.data);
                         }
-                    }
                
                 }
-                if (COM3DataPoints.Count < 1000) 
+                if (COM3DataPoints.Count < finalsize)  // if not all data is as big as it needs to be
                 { int border = COM3DataPoints.Count;
-                    for (int i = 0; i < 1000 - border; i++)
+                    for (int i = 0; i < finalsize - border; i++)
                     {
                         dataPoint extraFill = new dataPoint(COM3DataPoints[COM3DataPoints.Count - 1].data);
                         COM3DataPoints.Add(extraFill);
                     }
                 }
               
-                string dir = pathToData + " Parsed";
+                string dir = pathToData + " resized";
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < COM3DataPoints.Count; i++)
                 {
-                    for (int j = 0; j < COM3DataPoints[i].data.Length-2; j++)
+                    for (int j = 0; j < COM3DataPoints[i].data.Length; j++)
                     {
                         builder.Append(COM3DataPoints[i].data[j].ToString());
-                        builder.Append("|");
+                        if (i != COM3DataPoints[i].data.Length - 1)
+                        {
+                            builder.Append("|");
+                        }
                     }
                     builder.Append("\r\n");
                 }
@@ -361,13 +482,14 @@ namespace Motion_Project
                 if (!Directory.Exists(HorPath))
                     Directory.CreateDirectory(HorPath);
                 StringBuilder HorBuilder = new StringBuilder();
-                for (int j = 0; j< COM3DataPoints[j].data.Length - 2; j++)
+                for (int j = 0; j< COM3DataPoints[j].data.Length; j++)
                 {
                     for (int i = 0; i < COM3DataPoints.Count; i++)
                     {
                         HorBuilder.Append(COM3DataPoints[i].data[j].ToString());
                         HorBuilder.Append("|");
                     }
+                    HorBuilder.Remove(HorBuilder.Length-1, 1);
                     HorBuilder.Append("\r\n");
                 }
                 File.WriteAllText(HorPath + "\\" + Path.GetFileName(pathToParse), HorBuilder.ToString());
@@ -378,7 +500,7 @@ namespace Motion_Project
 
         private void CorrelButton_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\Вынос правой руки вперед сидя к арьянскому лидеру 04.12.20 00-11-17 Horrizontal";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45 Horrizontal";
             string[] files = Directory.GetFiles(pathToData, "*");
             List<dataPoint> Ax = new List<dataPoint>();
             List<dataPoint> Ay = new List<dataPoint>();
@@ -394,7 +516,7 @@ namespace Motion_Project
             List<dataPoint> Ry = new List<dataPoint>();
             List<dataPoint> Rz = new List<dataPoint>();
 
-            foreach (string pathToFile in files)
+            foreach (string pathToFile in files)            //Horizontal Data
             {
                 string[] CurFileToAccess = File.ReadAllLines(pathToFile);
                 for (int i = 0; i < CurFileToAccess.Length; i++)
@@ -415,76 +537,96 @@ namespace Motion_Project
                         Ry.Add(new dataPoint(CurFileToAccess[11]));
                         Rz.Add(new dataPoint(CurFileToAccess[12]));
             }
-            //int sameShit=0;
-            //for (int j = 0; j < Px.Count - 1; j++)
+            int sameShit = 0; // Spearman correlation
+            for (int j = 0; j < Px.Count - 1; j++)
+            {
+                for (int i = 0; i < Px.Count - 1; i++)
+                {
+                    double correlx = Correlation.Pearson(Ax[j].data, Ax[i].data);
+                    double correly = Correlation.Pearson(Ay[j].data, Ay[i].data);
+                    double correlz = Correlation.Pearson(Az[j].data, Az[i].data);
+                    if (correlx > 0.75 && correly > 0.75 && correlz > 0.75)
+                    {
+                        sameShit++;
+                    }
+                }
+                rtbDisplay.AppendText("i=" + j + " " + sameShit.ToString() + "\r\n");
+                sameShit = 0;
+            }
+
+            //List<double> AvX = new List<double>(); // мат ожидание 
+            //List<double> AvY = new List<double>();
+            //List<double> AvZ = new List<double>();
+
+            //for (int j = 0; j < Px.Count; j++)
             //{
-            //    for (int i = 0; i < Px.Count - 1; i++)
-            //    {
-            //        double correlx = Correlation.Pearson(W[j].data, W[i].data);
-            //        double correly = Correlation.Pearson(W[j].data, W[i].data);
-            //        double correlz = Correlation.Pearson(W[j].data, W[i].data);
-            //            if (correlx> 0.80 && correly > 0.80 && correlz > 0.85)
-            //            {
-            //            sameShit++;
-            //            }
-            //    }
-            //    rtbDisplay.AppendText("i=" + j + " "+sameShit.ToString() + "\r\n");
-            //    sameShit = 0;
+            //        AvX.Add( Enumerable.Average(Ax[j].data));
+            //        AvY.Add(Enumerable.Average(Ay[j].data));
+            //        AvZ.Add(Enumerable.Average(Az[j].data));
             //}
 
-            dataPoint AvarageX = new dataPoint(new double[1000]);
-            dataPoint AvarageY = new dataPoint(new double[1000]);
-            dataPoint AvarageZ = new dataPoint(new double[1000]);
+            //List<double> EvX = new List<double>();
+            //List<double> EvY = new List<double>();
+            //List<double> EvZ = new List<double>();
+            //for (int i = 0; i < Px.Count; i++)
+            //{
+            //    for (int j = 0; j < Px.Count; j++)
+            //    {
+            //        if (i != j)
+            //        {
+            //            EvX.Add(Math.Abs(AvX[i] - AvX[j]));
+            //            EvY.Add(Math.Abs(AvY[i] - AvY[j]));
+            //            EvZ.Add(Math.Abs(AvZ[i] - AvZ[j]));
+            //        }
+            //    }
+            //}
 
-            for (int i = 0; i < 1000; i++)
-            {
+            //double EuclidFinalX = Enumerable.Average(EvX);
+            //double EuclidFinalY = Enumerable.Average(EvY);
+            //double EuclidFinalZ = Enumerable.Average(EvZ);
 
-                for (int j = 0; j < Px.Count; j++)
-                {
-                    AvarageX.data[i] += Ax[j].data[i];
-                    AvarageY.data[i] += Ay[j].data[i];
-                    AvarageZ.data[i] += Az[j].data[i];
-                }
-                AvarageX.data[i] = AvarageX.data[i] / Px.Count;
-                AvarageY.data[i] = AvarageY.data[i] / Px.Count;
-                AvarageZ.data[i] = AvarageZ.data[i] / Px.Count;
-            }
-            dataPoint EuclidX = new dataPoint(new double[1000]);
-            dataPoint EuclidY = new dataPoint(new double[1000]);
-            dataPoint EuclidZ = new dataPoint(new double[1000]);
+            //rtbDisplay.AppendText(EuclidFinalX.ToString()+"\r\n");
+            //rtbDisplay.AppendText(EuclidFinalY.ToString() + "\r\n");
+            //rtbDisplay.AppendText(EuclidFinalZ.ToString() + "\r\n");
 
-            for (int i = 0; i < 1000; i++)
-            {
+            //dataPoint EuclidX = new dataPoint(new double[1000]);
+            //dataPoint EuclidY = new dataPoint(new double[1000]);
+            //dataPoint EuclidZ = new dataPoint(new double[1000]);
 
-                for (int j = 0; j < Px.Count; j++)
-                {
-                    EuclidX.data[i] += Math.Abs( AvarageX.data[i] - Ax[j].data[i]);
-                    EuclidY.data[i] += Math.Abs( AvarageY.data[i] - Ay[j].data[i]);
-                    EuclidZ.data[i] += Math.Abs( AvarageY.data[i] - Az[j].data[i]);
-                }
-                EuclidX.data[i] = EuclidX.data[i] / Px.Count;
-                EuclidY.data[i] = EuclidY.data[i] / Px.Count;
-                EuclidZ.data[i] = EuclidZ.data[i] / Px.Count;
-            }
+            //for (int i = 0; i < 1000; i++)
+            //{
+
+            //    for (int j = 0; j < Px.Count; j++)
+            //    {
+            //        EuclidX.data[i] += Math.Abs( AvarageX.data[i] - Ax[j].data[i]);
+            //        EuclidY.data[i] += Math.Abs( AvarageY.data[i] - Ay[j].data[i]);
+            //        EuclidZ.data[i] += Math.Abs( AvarageY.data[i] - Az[j].data[i]);
+            //    }
+            //    EuclidX.data[i] = EuclidX.data[i] / Px.Count;
+            //    EuclidY.data[i] = EuclidY.data[i] / Px.Count;
+            //    EuclidZ.data[i] = EuclidZ.data[i] / Px.Count;
+            //}
 
 
-            string HorPath = pathToData + " Avarage";
-            if (!Directory.Exists(HorPath))
-                Directory.CreateDirectory(HorPath);
-            StringBuilder HorBuilder = new StringBuilder();
-            for (int j = 0; j < EuclidX.data.Length; j++)
-            {
-                    HorBuilder.Append(EuclidX.data[j].ToString());
-                    HorBuilder.Append("|");
-                    HorBuilder.Append(EuclidY.data[j].ToString());
-                    HorBuilder.Append("|");
-                    HorBuilder.Append(EuclidZ.data[j].ToString());
-                    HorBuilder.Append("\r\n");
-            }
-            File.WriteAllText(HorPath + "\\" + Path.GetFileName(pathToData), HorBuilder.ToString());
+            //string HorPath = pathToData + " Avarage";
+            //if (!Directory.Exists(HorPath))
+            //    Directory.CreateDirectory(HorPath);
+            //StringBuilder HorBuilder = new StringBuilder();
+            //for (int j = 0; j < EuclidX.data.Length; j++)
+            //{
+            //        HorBuilder.Append(EuclidX.data[j].ToString());
+            //        HorBuilder.Append("|");
+            //        HorBuilder.Append(EuclidY.data[j].ToString());
+            //        HorBuilder.Append("|");
+            //        HorBuilder.Append(EuclidZ.data[j].ToString());
+            //        HorBuilder.Append("\r\n");
+            //}
+            //File.WriteAllText(HorPath + "\\" + Path.GetFileName(pathToData), HorBuilder.ToString());
 
 
             //to do: correl calculation
         }
+
+       
     }
 }

@@ -60,6 +60,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.resizeLabel = new System.Windows.Forms.Label();
             this.CorrelButton = new System.Windows.Forms.Button();
+            this.createXmlfiles_button = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Send
@@ -363,11 +364,22 @@
             this.CorrelButton.UseVisualStyleBackColor = true;
             this.CorrelButton.Click += new System.EventHandler(this.CorrelButton_Click);
             // 
+            // createXmlfiles_button
+            // 
+            this.createXmlfiles_button.Location = new System.Drawing.Point(718, 635);
+            this.createXmlfiles_button.Name = "createXmlfiles_button";
+            this.createXmlfiles_button.Size = new System.Drawing.Size(166, 31);
+            this.createXmlfiles_button.TabIndex = 33;
+            this.createXmlfiles_button.Text = "createXmlfiles_button";
+            this.createXmlfiles_button.UseVisualStyleBackColor = true;
+            this.createXmlfiles_button.Click += new System.EventHandler(this.createXmlfiles_button_Click);
+            // 
             // SerialReader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1074, 745);
+            this.Controls.Add(this.createXmlfiles_button);
             this.Controls.Add(this.CorrelButton);
             this.Controls.Add(this.resizeLabel);
             this.Controls.Add(this.label10);
@@ -442,6 +454,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label resizeLabel;
         private System.Windows.Forms.Button CorrelButton;
+        private System.Windows.Forms.Button createXmlfiles_button;
     }
 }
 
