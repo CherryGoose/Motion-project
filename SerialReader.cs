@@ -287,9 +287,52 @@ namespace Motion_Project
         }
         private void createXmlfiles_button_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\left";
+            XmlWriterSettings wSettings = new XmlWriterSettings();
+            wSettings.Indent = true;
+            wSettings.ConformanceLevel = ConformanceLevel.Fragment;
+            wSettings.OmitXmlDeclaration = true;
+            string pathToData = Environment.CurrentDirectory + "\\Files\\left resized generated";
             string[] files = Directory.GetFiles(pathToData, "*");
-            List<dataPoint> fileDataPoints = new List<dataPoint>();
+            XmlWriter writer = XmlWriter.Create(Environment.CurrentDirectory + "\\"+"User1Data.xml", wSettings);
+
+
+            writer.WriteStartElement("Classes");
+            writer.WriteAttributeString("lang", "en");
+            writer.WriteStartElement("Specification");
+            writer.WriteAttributeString("description", "Эксперимент");
+            writer.WriteStartElement("Feature");
+            writer.WriteAttributeString("id", "1");
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Feature");
+            writer.WriteAttributeString("id", "2");
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Feature");
+            writer.WriteAttributeString("id", "3");
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Feature");
+            writer.WriteAttributeString("id", "4");
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Feature");
+            writer.WriteAttributeString("id", "5");
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Feature");
+            writer.WriteAttributeString("id", "6");
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Feature");
+            writer.WriteAttributeString("id", "7");
+            writer.WriteEndElement();
+
+            writer.WriteEndElement();
+            writer.WriteStartElement("Features");
+            writer.WriteStartElement("Class");
+            writer.WriteAttributeString("name", "Пользователь 1");
+            
             foreach (string pathToParse in files)
             {
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
@@ -301,75 +344,32 @@ namespace Motion_Project
                 string s = "";
                 string n = "";
 
+                ax = curFileToResize[0];
+                ay = curFileToResize[1];
+                az = curFileToResize[2];
+                q = curFileToResize[3];
+                w = curFileToResize[4];
+                s = curFileToResize[5];
+                n = curFileToResize[6];
+                //fileDataPoints.Add(new dataPoint(curFileToResize[i]));
 
-                for (int i = 0; i < curFileToResize.Length; i++)
+                ax=ax.Replace(",",".");
+                ay=ay.Replace(",", ".");
+                az=az.Replace(",", ".");
+                q=  q.Replace(",", ".");
+                w= w.Replace(",", ".");
+                s= s.Replace(",", ".");
+                n=n.Replace(",", ".");
+
+                ax=ax.Replace("|", ",");
+                ay = ay.Replace("|", ",");
+                az = az.Replace("|", ",");
+                q=q.Replace("|", ",");
+                w= w.Replace("|", ",");
+                s= s.Replace("|", ",");
+                n= n.Replace("|", ",");
                 {
-                    if (curFileToResize[i] == "" || curFileToResize[i] == ";")
-                    {
-                        continue;
-                    }
-
-                    string[] a = curFileToResize[i].Split(',');
-                    ax += a[0]+",";
-                    ay += a[1] + ",";
-                    az += a[2] + ",";
-                    q += a[3] + ",";
-                    w += a[4] + ",";
-                    s += a[5] + ",";
-                    n += a[6] + ",";
-                    //fileDataPoints.Add(new dataPoint(curFileToResize[i]));
-                }
-                ax += "0";
-                ay += "0";
-                az += "0";
-                q += "0";
-                w += "0";
-                s += "0";
-                n += "0";
-                {
-                    XmlWriterSettings wSettings = new XmlWriterSettings();
-                    wSettings.Indent = true;
-                    wSettings.ConformanceLevel = ConformanceLevel.Fragment;
-                    wSettings.OmitXmlDeclaration = true;
-                    XmlWriter writer = XmlWriter.Create(pathToParse + ".xml", wSettings);
-
-
-                    writer.WriteStartElement("Classes");
-                    writer.WriteAttributeString("lang", "en");
-                    writer.WriteStartElement("Specification");
-                    writer.WriteAttributeString("description", "Эксперимент");
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "1");
-                    writer.WriteEndElement();
-
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "2");
-                    writer.WriteEndElement();
-
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "3");
-                    writer.WriteEndElement();
-
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "4");
-                    writer.WriteEndElement();
-
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "5");
-                    writer.WriteEndElement();
-
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "6");
-                    writer.WriteEndElement();
-
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "7");
-                    writer.WriteEndElement();
-
-                    writer.WriteEndElement();
-                    writer.WriteStartElement("Features");
-                    writer.WriteStartElement("Class");
-                    writer.WriteAttributeString("name", "Пользователь 1");
+                   
                     writer.WriteStartElement("Realization");
 
                     writer.WriteStartElement("Feature");
@@ -402,17 +402,18 @@ namespace Motion_Project
                     writer.WriteEndElement();
                     //writer.WriteAttributeString("value", ax.ToString());
                     writer.WriteEndElement();
-                    writer.WriteEndElement();
-                    writer.WriteEndElement();
-                    writer.Flush();
-                    writer.Close();
+                   
                  }
 
             }
+            writer.WriteEndElement();
+            writer.WriteEndElement();
+            writer.Flush();
+            writer.Close();
         }
         private void ResizeDataButton_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\left";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\up";
             string[] files = Directory.GetFiles(pathToData, "*");
             int finalsize = 1000;
             resizeLabel.Text = "";
@@ -469,7 +470,7 @@ namespace Motion_Project
                     for (int j = 0; j < COM3DataPoints[i].data.Length; j++)
                     {
                         builder.Append(COM3DataPoints[i].data[j].ToString());
-                        if (i != COM3DataPoints[i].data.Length - 1)
+                        if (j != COM3DataPoints[i].data.Length - 1)
                         {
                             builder.Append("|");
                         }
@@ -498,6 +499,112 @@ namespace Motion_Project
             resizeLabel.Text = "Resizing done!";
         }
 
+
+
+        private void GenerateNew_Click(object sender, EventArgs e)
+        {
+            string pathToData = Environment.CurrentDirectory + "\\Files\\up resized";
+            string[] files = Directory.GetFiles(pathToData, "*");
+            double[,,] dataFromAllFiles = new double[files.Length, 7, 1000];
+
+
+            foreach (string pathToParse in files)
+            {
+                int stringcount = 0;
+                string[] curFileToResize = File.ReadAllLines(pathToParse);
+                for (int i = 0; i < curFileToResize.Length; i++)
+                {
+                    string[] a = curFileToResize[i].Split('|');
+                    for (int j = 0; j < a.Length; j++)
+                    {
+                        dataFromAllFiles[stringcount, j, i] = Double.Parse(a[j]);
+                    }
+                }
+                stringcount++;
+            }
+
+            double[,] AvarageData = new double[7, 1000];
+            double[,] Maxdiviation = new double[7, 1000];
+            double[,] Mindiviation = new double[7, 1000];
+            for (int i = 0; i < dataFromAllFiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < dataFromAllFiles.GetLength(1); j++)
+                {
+                    for (int k = 0; k < dataFromAllFiles.GetLength(2); k++)
+                    {
+                        AvarageData[j, k] += dataFromAllFiles[i, j, k];
+
+                    }
+                }
+            }
+
+            for (int j = 0; j < dataFromAllFiles.GetLength(1); j++)
+            {
+                for (int k = 0; k < dataFromAllFiles.GetLength(2); k++)
+                {
+                    AvarageData[j, k] = AvarageData[j, k] / dataFromAllFiles.GetLength(0);
+
+                }
+            }
+            for (int i = 0; i < dataFromAllFiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < dataFromAllFiles.GetLength(1); j++)
+                {
+                    for (int k = 0; k < dataFromAllFiles.GetLength(2); k++)
+                    {
+                        if (AvarageData[j, k] > 0 && AvarageData[j, k] < dataFromAllFiles[i, j, k])
+                        {
+                            Maxdiviation[j, k] = dataFromAllFiles[i, j, k];
+                        }
+                        else
+                        {
+                            if (AvarageData[j, k] > 0 && AvarageData[j, k] < dataFromAllFiles[i, j, k])
+                            {
+                                Mindiviation[j, k] = dataFromAllFiles[i, j, k];
+                            }
+                        }
+                        if (AvarageData[j, k] < 0 && AvarageData[j, k] > dataFromAllFiles[i, j, k])
+                        {
+                            Maxdiviation[j, k] = dataFromAllFiles[i, j, k];
+                        }
+                        else
+                        {
+                            if (AvarageData[j, k] < 0 && AvarageData[j, k] < dataFromAllFiles[i, j, k])
+                            {
+                                Mindiviation[j, k] = dataFromAllFiles[i, j, k];
+                            }
+                        }
+                    }
+                }
+            }
+            int numberOfnewSamples = 200;
+            double[,] GeteratedValues = new double[7, 1000];
+            Random rand = new Random();
+            StringBuilder builder = new StringBuilder();
+            string dir = pathToData + " generated";
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+
+            for (int i = 0; i < numberOfnewSamples; i++)
+            {
+                for (int j = 0; j < dataFromAllFiles.GetLength(1); j++)
+                {
+                    for (int k = 0; k < dataFromAllFiles.GetLength(2); k++)
+                    {
+                        GeteratedValues[j, k] = Math.Round(rand.NextDouble() * (Maxdiviation[j, k] - Mindiviation[j, k]) + Mindiviation[j, k],4);
+                        builder.Append(GeteratedValues[j, k].ToString());
+                        builder.Append("|");
+                    }
+                builder.Remove(builder.Length-1,1);
+                builder.Append("\r\n");
+
+                }
+                File.WriteAllText(dir + "\\" + i, builder.ToString());
+
+            }
+            resizeLabel.Text = "Generation done!";
+        }
         private void CorrelButton_Click(object sender, EventArgs e)
         {
             string pathToData = Environment.CurrentDirectory + "\\Files\\Правая рука вверх с поворотом сидя 23-24-45 Horrizontal";
@@ -627,6 +734,6 @@ namespace Motion_Project
             //to do: correl calculation
         }
 
-       
+        
     }
 }
