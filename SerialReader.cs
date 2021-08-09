@@ -289,6 +289,7 @@ namespace Motion_Project
         {
             XmlWriterSettings wSettings = new XmlWriterSettings();
             wSettings.Indent = true;
+           ///
            wSettings.ConformanceLevel = ConformanceLevel.Document;
             //wSettings.OmitXmlDeclaration = true;
             //wSettings.Encoding = Encoding.UTF8;
