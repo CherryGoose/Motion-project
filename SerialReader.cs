@@ -289,117 +289,112 @@ namespace Motion_Project
         {
             XmlWriterSettings wSettings = new XmlWriterSettings();
             wSettings.Indent = true;
-            wSettings.ConformanceLevel = ConformanceLevel.Fragment;
-            wSettings.OmitXmlDeclaration = true;
+           wSettings.ConformanceLevel = ConformanceLevel.Document;
+            //wSettings.OmitXmlDeclaration = true;
+            //wSettings.Encoding = Encoding.UTF8;
             string pathToData = Environment.CurrentDirectory + "\\Files\\left resized generated";
             string[] files = Directory.GetFiles(pathToData, "*");
-            XmlWriter writer = XmlWriter.Create(Environment.CurrentDirectory + "\\"+"User1Data.xml", wSettings);
-
+            XmlWriter writer = XmlWriter.Create(Environment.CurrentDirectory + "\\Files\\" + "User1Data.xml", wSettings);
+            writer.WriteProcessingInstruction("xml", "version='1.0' encoding='utf-8'");
 
             writer.WriteStartElement("Classes");
-            writer.WriteAttributeString("lang", "en");
+            writer.WriteAttributeString("lang", "ru");
             writer.WriteStartElement("Specification");
-            writer.WriteAttributeString("description", "Эксперимент");
+            writer.WriteAttributeString("description", "Распознание");
             writer.WriteStartElement("Feature");
             writer.WriteAttributeString("id", "1");
+            writer.WriteAttributeString("description", "Ax");
             writer.WriteEndElement();
 
             writer.WriteStartElement("Feature");
             writer.WriteAttributeString("id", "2");
+            writer.WriteAttributeString("description", "Ay");
             writer.WriteEndElement();
 
             writer.WriteStartElement("Feature");
             writer.WriteAttributeString("id", "3");
+            writer.WriteAttributeString("description", "Az");
             writer.WriteEndElement();
 
             writer.WriteStartElement("Feature");
             writer.WriteAttributeString("id", "4");
+            writer.WriteAttributeString("description", "q");
             writer.WriteEndElement();
 
             writer.WriteStartElement("Feature");
             writer.WriteAttributeString("id", "5");
+            writer.WriteAttributeString("description", "w");
             writer.WriteEndElement();
 
             writer.WriteStartElement("Feature");
             writer.WriteAttributeString("id", "6");
+            writer.WriteAttributeString("description", "s");
             writer.WriteEndElement();
 
             writer.WriteStartElement("Feature");
             writer.WriteAttributeString("id", "7");
+            writer.WriteAttributeString("description", "n");
             writer.WriteEndElement();
 
             writer.WriteEndElement();
             writer.WriteStartElement("Features");
             writer.WriteStartElement("Class");
-            writer.WriteAttributeString("name", "Пользователь 1");
+            writer.WriteAttributeString("name", "User 1");
             
             foreach (string pathToParse in files)
             {
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
-                string ax = "";
-                string ay = "";
-                string az = "";
-                string q = "";
-                string w = "";
-                string s = "";
-                string n = "";
+                string ax = curFileToResize[0];
+                string ay = curFileToResize[1];
+                string az = curFileToResize[2];
+                string q = curFileToResize[3];
+                string w = curFileToResize[4];
+                string s = curFileToResize[5];
+                string n = curFileToResize[6];
 
-                ax = curFileToResize[0];
-                ay = curFileToResize[1];
-                az = curFileToResize[2];
-                q = curFileToResize[3];
-                w = curFileToResize[4];
-                s = curFileToResize[5];
-                n = curFileToResize[6];
                 //fileDataPoints.Add(new dataPoint(curFileToResize[i]));
+                string[] axSplit = ax.Split('|');
+                string[] aySplit = ay.Split('|');
+                string[] azSplit = az.Split('|');
+                string[] qSplit = q.Split('|');
+                string[] wSplit = w.Split('|');
+                string[] sSplit = s.Split('|');
+                string[] nSplit = n.Split('|');
 
-                ax=ax.Replace(",",".");
-                ay=ay.Replace(",", ".");
-                az=az.Replace(",", ".");
-                q=  q.Replace(",", ".");
-                w= w.Replace(",", ".");
-                s= s.Replace(",", ".");
-                n=n.Replace(",", ".");
-
-                ax=ax.Replace("|", ",");
-                ay = ay.Replace("|", ",");
-                az = az.Replace("|", ",");
-                q=q.Replace("|", ",");
-                w= w.Replace("|", ",");
-                s= s.Replace("|", ",");
-                n= n.Replace("|", ",");
                 {
                    
                     writer.WriteStartElement("Realization");
-
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "1");
-                    writer.WriteAttributeString("value", ax);
-                    writer.WriteEndElement();
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "2");
-                    writer.WriteAttributeString("value", ay);
-                    writer.WriteEndElement();
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "3");
-                    writer.WriteAttributeString("value", az);
-                    writer.WriteEndElement();
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "4");
-                    writer.WriteAttributeString("value", q);
-                    writer.WriteEndElement();
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "5");
-                    writer.WriteAttributeString("value", w);
-                    writer.WriteEndElement();
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "6");
-                    writer.WriteAttributeString("value", s);
-                    writer.WriteEndElement();
-                    writer.WriteStartElement("Feature");
-                    writer.WriteAttributeString("id", "7");
-                    writer.WriteAttributeString("value", n);
-                    writer.WriteEndElement();
+                    for (int i = 0; i < axSplit.Length; i++)
+                    {
+                        writer.WriteStartElement("Feature");
+                        writer.WriteAttributeString("id", "1");
+                        writer.WriteAttributeString("value", axSplit[i]);
+                        writer.WriteEndElement();
+                        writer.WriteStartElement("Feature");
+                        writer.WriteAttributeString("id", "2");
+                        writer.WriteAttributeString("value", aySplit[i]);
+                        writer.WriteEndElement();
+                        writer.WriteStartElement("Feature");
+                        writer.WriteAttributeString("id", "3");
+                        writer.WriteAttributeString("value", azSplit[i]);
+                        writer.WriteEndElement();
+                        writer.WriteStartElement("Feature");
+                        writer.WriteAttributeString("id", "4");
+                        writer.WriteAttributeString("value", qSplit[i]);
+                        writer.WriteEndElement();
+                        writer.WriteStartElement("Feature");
+                        writer.WriteAttributeString("id", "5");
+                        writer.WriteAttributeString("value", wSplit[i]);
+                        writer.WriteEndElement();
+                        writer.WriteStartElement("Feature");
+                        writer.WriteAttributeString("id", "6");
+                        writer.WriteAttributeString("value", sSplit[i]);
+                        writer.WriteEndElement();
+                        writer.WriteStartElement("Feature");
+                        writer.WriteAttributeString("id", "7");
+                        writer.WriteAttributeString("value", nSplit[i]);
+                        writer.WriteEndElement();
+                    }
                     //writer.WriteAttributeString("value", ax.ToString());
                     writer.WriteEndElement();
                    
@@ -410,6 +405,7 @@ namespace Motion_Project
             writer.WriteEndElement();
             writer.Flush();
             writer.Close();
+            resizeLabel.Text = "Xml Creation done!";
         }
         private void ResizeDataButton_Click(object sender, EventArgs e)
         {
@@ -503,14 +499,14 @@ namespace Motion_Project
 
         private void GenerateNew_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\up resized";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\left resized";
             string[] files = Directory.GetFiles(pathToData, "*");
             double[,,] dataFromAllFiles = new double[files.Length, 7, 1000];
 
+            int stringcount = 0;
 
             foreach (string pathToParse in files)
             {
-                int stringcount = 0;
                 string[] curFileToResize = File.ReadAllLines(pathToParse);
                 for (int i = 0; i < curFileToResize.Length; i++)
                 {
@@ -580,7 +576,6 @@ namespace Motion_Project
             int numberOfnewSamples = 200;
             double[,] GeteratedValues = new double[7, 1000];
             Random rand = new Random();
-            StringBuilder builder = new StringBuilder();
             string dir = pathToData + " generated";
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
@@ -588,6 +583,7 @@ namespace Motion_Project
 
             for (int i = 0; i < numberOfnewSamples; i++)
             {
+                StringBuilder builder = new StringBuilder();
                 for (int j = 0; j < dataFromAllFiles.GetLength(1); j++)
                 {
                     for (int k = 0; k < dataFromAllFiles.GetLength(2); k++)
@@ -600,7 +596,7 @@ namespace Motion_Project
                 builder.Append("\r\n");
 
                 }
-                File.WriteAllText(dir + "\\" + i, builder.ToString());
+                File.WriteAllText(dir + "\\" + i+".txt", builder.ToString());
 
             }
             resizeLabel.Text = "Generation done!";
