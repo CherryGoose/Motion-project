@@ -9,6 +9,7 @@ using System.Text;
 using System.Linq;
 using MathNet.Numerics.Statistics;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Motion_Project
 {
@@ -285,6 +286,71 @@ namespace Motion_Project
             }
                 return outString.ToString();
         }
+
+        private void CombiteXml_Click(object sender, EventArgs e)
+        {
+            string pathToData = Environment.CurrentDirectory + "\\Files\\XMLFiles";
+            string[] files = Directory.GetFiles(pathToData, " * "); 
+            if (!Directory.Exists(Environment.CurrentDirectory + "\\Files\\All Classes data.xml"))
+            {
+                XmlWriterSettings wSettings = new XmlWriterSettings();
+                wSettings.Indent = true;
+                wSettings.ConformanceLevel = ConformanceLevel.Document;
+                XmlWriter writer = XmlWriter.Create(Environment.CurrentDirectory + "\\Files\\All Classes data.xml", wSettings);
+                writer.WriteProcessingInstruction("xml", "version='1.0' encoding='utf-8'");
+                writer.WriteStartElement("Classes");
+                writer.WriteAttributeString("lang", "ru");
+                writer.WriteStartElement("Specification");
+                writer.WriteAttributeString("description", "Распознание");
+                writer.WriteStartElement("Feature");
+                writer.WriteAttributeString("id", "1");
+                writer.WriteAttributeString("description", "Ax");
+                writer.WriteEndElement();
+                writer.WriteStartElement("Feature");
+                writer.WriteAttributeString("id", "2");
+                writer.WriteAttributeString("description", "Ay");
+                writer.WriteEndElement();
+                writer.WriteStartElement("Feature");
+                writer.WriteAttributeString("id", "3");
+                writer.WriteAttributeString("description", "Az");
+                writer.WriteEndElement();
+                writer.WriteStartElement("Feature");
+                writer.WriteAttributeString("id", "4");
+                writer.WriteAttributeString("description", "q");
+                writer.WriteEndElement();
+                writer.WriteStartElement("Feature");
+                writer.WriteAttributeString("id", "5");
+                writer.WriteAttributeString("description", "w");
+                writer.WriteEndElement();
+                writer.WriteStartElement("Feature");
+                writer.WriteAttributeString("id", "6");
+                writer.WriteAttributeString("description", "s");
+                writer.WriteEndElement();
+                writer.WriteStartElement("Feature");
+                writer.WriteAttributeString("id", "7");
+                writer.WriteAttributeString("description", "n");
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+                writer.WriteStartElement("Features");
+                writer.WriteStartElement("Class");
+                writer.WriteAttributeString("name", "Empty");
+                writer.WriteStartElement("Realization");
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+                writer.Flush();
+                writer.Close();
+            }
+            var xml1 = XDocument.Load(Environment.CurrentDirectory + "\\Files\\All Classes data.xml");
+
+            foreach (string file in files)
+            {
+                xml1.Descendants("Class").LastOrDefault().AddAfterSelf(XDocument.Load(file).Descendants("Class"));
+            }
+
+            xml1.Save(Environment.CurrentDirectory + "\\Files\\All Classes data.xml");
+
+        }
         private void createXmlfiles_button_Click(object sender, EventArgs e)
         {
             XmlWriterSettings wSettings = new XmlWriterSettings();
@@ -293,9 +359,11 @@ namespace Motion_Project
            wSettings.ConformanceLevel = ConformanceLevel.Document;
             //wSettings.OmitXmlDeclaration = true;
             //wSettings.Encoding = Encoding.UTF8;
-            string pathToData = Environment.CurrentDirectory + "\\Files\\left resized generated";
+            string nameOfFolder = "up";
+
+            string pathToData = Environment.CurrentDirectory + "\\Files\\"+nameOfFolder+" resized generated";
             string[] files = Directory.GetFiles(pathToData, "*");
-            XmlWriter writer = XmlWriter.Create(Environment.CurrentDirectory + "\\Files\\" + "User1Data.xml", wSettings);
+            XmlWriter writer = XmlWriter.Create(Environment.CurrentDirectory + "\\Files\\XMLFiles\\" + nameOfFolder + "Data.xml", wSettings);
             writer.WriteProcessingInstruction("xml", "version='1.0' encoding='utf-8'");
 
             writer.WriteStartElement("Classes");
@@ -340,7 +408,7 @@ namespace Motion_Project
             writer.WriteEndElement();
             writer.WriteStartElement("Features");
             writer.WriteStartElement("Class");
-            writer.WriteAttributeString("name", "User 1");
+            writer.WriteAttributeString("name", nameOfFolder);
             
             foreach (string pathToParse in files)
             {
@@ -500,7 +568,7 @@ namespace Motion_Project
 
         private void GenerateNew_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\left resized";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\up resized";
             string[] files = Directory.GetFiles(pathToData, "*");
             double[,,] dataFromAllFiles = new double[files.Length, 7, 1000];
 
@@ -731,6 +799,6 @@ namespace Motion_Project
             //to do: correl calculation
         }
 
-        
+       
     }
 }

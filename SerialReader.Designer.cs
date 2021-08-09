@@ -62,6 +62,7 @@
             this.CorrelButton = new System.Windows.Forms.Button();
             this.createXmlfiles_button = new System.Windows.Forms.Button();
             this.GenerateNew = new System.Windows.Forms.Button();
+            this.CombiteXml = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Send
@@ -385,11 +386,22 @@
             this.GenerateNew.UseVisualStyleBackColor = true;
             this.GenerateNew.Click += new System.EventHandler(this.GenerateNew_Click);
             // 
+            // CombiteXml
+            // 
+            this.CombiteXml.Location = new System.Drawing.Point(366, 635);
+            this.CombiteXml.Name = "CombiteXml";
+            this.CombiteXml.Size = new System.Drawing.Size(143, 31);
+            this.CombiteXml.TabIndex = 35;
+            this.CombiteXml.Text = "Combine Xml";
+            this.CombiteXml.UseVisualStyleBackColor = true;
+            this.CombiteXml.Click += new System.EventHandler(this.CombiteXml_Click);
+            // 
             // SerialReader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1074, 745);
+            this.Controls.Add(this.CombiteXml);
             this.Controls.Add(this.GenerateNew);
             this.Controls.Add(this.createXmlfiles_button);
             this.Controls.Add(this.CorrelButton);
@@ -468,6 +480,7 @@
         private System.Windows.Forms.Button CorrelButton;
         private System.Windows.Forms.Button createXmlfiles_button;
         private System.Windows.Forms.Button GenerateNew;
+        private System.Windows.Forms.Button CombiteXml;
     }
 }
 
