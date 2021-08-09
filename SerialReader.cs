@@ -290,7 +290,7 @@ namespace Motion_Project
         private void CombiteXml_Click(object sender, EventArgs e)
         {
             string pathToData = Environment.CurrentDirectory + "\\Files\\XMLFiles";
-            string[] files = Directory.GetFiles(pathToData, " * "); 
+            string[] files = Directory.GetFiles(pathToData, "*.xml"); 
             if (!Directory.Exists(Environment.CurrentDirectory + "\\Files\\All Classes data.xml"))
             {
                 XmlWriterSettings wSettings = new XmlWriterSettings();
@@ -334,8 +334,6 @@ namespace Motion_Project
                 writer.WriteStartElement("Features");
                 writer.WriteStartElement("Class");
                 writer.WriteAttributeString("name", "Empty");
-                writer.WriteStartElement("Realization");
-                writer.WriteEndElement();
                 writer.WriteEndElement();
                 writer.WriteEndElement();
                 writer.Flush();
@@ -343,9 +341,16 @@ namespace Motion_Project
             }
             var xml1 = XDocument.Load(Environment.CurrentDirectory + "\\Files\\All Classes data.xml");
 
-            foreach (string file in files)
+            for (int i = 0; i < files.Length; i++)
             {
-                xml1.Descendants("Class").LastOrDefault().AddAfterSelf(XDocument.Load(file).Descendants("Class"));
+                if (i == 0)
+                {
+                    xml1.Descendants("Class").LastOrDefault().ReplaceWith(XDocument.Load(files[i]).Descendants("Class"));
+                }
+                else
+                {
+                    xml1.Descendants("Class").LastOrDefault().AddAfterSelf(XDocument.Load(files[i]).Descendants("Class"));
+                }
             }
 
             xml1.Save(Environment.CurrentDirectory + "\\Files\\All Classes data.xml");
