@@ -24,6 +24,8 @@ namespace Motion_Project
         string prevFileName = "";
         string fullData = ";COM6;\n;";
         int timeEllapsed = 0;
+        string DirectoryName = "";
+
 
         public SerialReader()
         {
@@ -203,7 +205,11 @@ namespace Motion_Project
                 WriteLabel.Text = "Writing";
             }
         }
+        private void tBoxTrashFolder_TextChanged(object sender, EventArgs e)
+        {
+            DirectoryName = Path.GetFileName(tBoxTrashFolder.Text);
 
+        }
         private void buttonFixTrash_Click(object sender, EventArgs e)
         {
             string[] files = Directory.GetFiles(tBoxTrashFolder.Text, "*");
@@ -220,15 +226,17 @@ namespace Motion_Project
                     curContent = curContent.Replace("\r\n;COM6;", "");
                     curContent = curContent.Replace("\r\n;COM4;", "");
                     curContent = curContent.Replace("\r\n\n", "\r\n");
+                    curContent = curContent.Replace(";", "");
                     curContent = curContent.Trim();
                     File.WriteAllText(pathToCheck, curContent);
                     string [] sizeFile = File.ReadAllLines(pathToCheck);
-                    if (sizeFile.Length < 10)
+                    if (sizeFile.Length < 20)
                     {
                         File.Delete(pathToCheck);
                     }
                 }
             }
+            resizeLabel.Text = "Fixtrash Done!";
         }
 
 
@@ -364,7 +372,7 @@ namespace Motion_Project
            wSettings.ConformanceLevel = ConformanceLevel.Document;
             //wSettings.OmitXmlDeclaration = true;
             //wSettings.Encoding = Encoding.UTF8;
-            string nameOfFolder = "up";
+            string nameOfFolder = DirectoryName;
 
             string pathToData = Environment.CurrentDirectory + "\\Files\\"+nameOfFolder+" resized generated";
             string[] files = Directory.GetFiles(pathToData, "*");
@@ -483,7 +491,7 @@ namespace Motion_Project
         }
         private void ResizeDataButton_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\up";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\"+ DirectoryName;
             string[] files = Directory.GetFiles(pathToData, "*");
             int finalsize = 1000;
             resizeLabel.Text = "";
@@ -549,21 +557,21 @@ namespace Motion_Project
                 }
                 File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), builder.ToString());
 
-                string HorPath = pathToData + " Horrizontal";
-                if (!Directory.Exists(HorPath))
-                    Directory.CreateDirectory(HorPath);
-                StringBuilder HorBuilder = new StringBuilder();
-                for (int j = 0; j< COM3DataPoints[j].data.Length; j++)
-                {
-                    for (int i = 0; i < COM3DataPoints.Count; i++)
-                    {
-                        HorBuilder.Append(COM3DataPoints[i].data[j].ToString());
-                        HorBuilder.Append("|");
-                    }
-                    HorBuilder.Remove(HorBuilder.Length-1, 1);
-                    HorBuilder.Append("\r\n");
-                }
-                File.WriteAllText(HorPath + "\\" + Path.GetFileName(pathToParse), HorBuilder.ToString());
+                //string HorPath = pathToData + " Horrizontal";
+                //if (!Directory.Exists(HorPath))
+                //    Directory.CreateDirectory(HorPath);
+                //StringBuilder HorBuilder = new StringBuilder();
+                //for (int j = 0; j< COM3DataPoints[j].data.Length; j++)
+                //{
+                //    for (int i = 0; i < COM3DataPoints.Count; i++)
+                //    {
+                //        HorBuilder.Append(COM3DataPoints[i].data[j].ToString());
+                //        HorBuilder.Append("|");
+                //    }
+                //    HorBuilder.Remove(HorBuilder.Length-1, 1);
+                //    HorBuilder.Append("\r\n");
+                //}
+                //File.WriteAllText(HorPath + "\\" + Path.GetFileName(pathToParse), HorBuilder.ToString());
 
             }
             resizeLabel.Text = "Resizing done!";
@@ -573,7 +581,7 @@ namespace Motion_Project
 
         private void GenerateNew_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\up resized";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\"+ DirectoryName + " resized";
             string[] files = Directory.GetFiles(pathToData, "*");
             double[,,] dataFromAllFiles = new double[files.Length, 7, 1000];
 
@@ -804,6 +812,6 @@ namespace Motion_Project
             //to do: correl calculation
         }
 
-       
+        
     }
 }

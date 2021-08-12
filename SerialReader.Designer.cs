@@ -320,6 +320,7 @@
             this.tBoxTrashFolder.Name = "tBoxTrashFolder";
             this.tBoxTrashFolder.Size = new System.Drawing.Size(360, 29);
             this.tBoxTrashFolder.TabIndex = 28;
+            this.tBoxTrashFolder.TextChanged += new System.EventHandler(this.tBoxTrashFolder_TextChanged);
             // 
             // labelWritingDone
             // 
