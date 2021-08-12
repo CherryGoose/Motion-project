@@ -30,9 +30,8 @@ namespace Motion_Project
         public SerialReader()
         {
             InitializeComponent();
-            pathtof = Directory.GetCurrentDirectory();
             WriteLabel.Text = "Ready";
-            pathtof += "\\Files\\" + DateTime.Now.ToString("dd.MM.yy HH-mm-ss");
+            pathtof = Directory.GetCurrentDirectory()+"\\Files\\" + DateTime.Now.ToString("dd.MM.yy HH-mm-ss");
             Directory.CreateDirectory(pathtof);
         }
 
@@ -197,6 +196,8 @@ namespace Motion_Project
                 WTF = false;
                 Filename = "READYTORECORD";
                 WriteLabel.Text = "Ready";
+                pathtof = Directory.GetCurrentDirectory()+"\\Files\\" + DateTime.Now.ToString("dd.MM.yy HH-mm-ss");
+                Directory.CreateDirectory(pathtof);
             }
             else
             {
