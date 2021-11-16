@@ -375,7 +375,7 @@ namespace Motion_Project
             //wSettings.Encoding = Encoding.UTF8;
             string nameOfFolder = DirectoryName;
 
-            string pathToData = Environment.CurrentDirectory + "\\Files\\"+nameOfFolder+" resized generated";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\"+nameOfFolder+" Zero generated";
             string[] files = Directory.GetFiles(pathToData, "*");
             XmlWriter writer = XmlWriter.Create(Environment.CurrentDirectory + "\\Files\\XMLFiles\\" + nameOfFolder + "Data.xml", wSettings);
             writer.WriteProcessingInstruction("xml", "version='1.0' encoding='utf-8'");
@@ -540,24 +540,48 @@ namespace Motion_Project
                     }
                 }
               
-                string dir = pathToData + " resized";
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < COM3DataPoints.Count; i++)
-                {
-                    for (int j = 0; j < COM3DataPoints[i].data.Length; j++)
-                    {
-                        builder.Append(COM3DataPoints[i].data[j].ToString());
-                        if (j != COM3DataPoints[i].data.Length - 1)
-                        {
-                            builder.Append("|");
-                        }
-                    }
-                    builder.Append("\r\n");
-                }
-                File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), builder.ToString());
+                //string dir = pathToData + " resized";
+                //if (!Directory.Exists(dir))
+                //    Directory.CreateDirectory(dir);
+                //StringBuilder builder = new StringBuilder();
+                //for (int i = 0; i < COM3DataPoints.Count; i++)
+                //{
+                //    for (int j = 0; j < COM3DataPoints[i].data.Length; j++)
+                //    {
+                //        builder.Append(COM3DataPoints[i].data[j].ToString());
+                //        if (j != COM3DataPoints[i].data.Length - 1)
+                //        {
+                //            builder.Append("|");
+                //        }
+                //    }
+                //    builder.Append("\r\n");
+                //}
+                //File.WriteAllText(dir + "\\" + Path.GetFileName(pathToParse), builder.ToString());
 
+                string ZeroPath= pathToData + " Zero";
+                StringBuilder Zerobuilder = new StringBuilder();
+                if (!Directory.Exists(ZeroPath))
+                    Directory.CreateDirectory(ZeroPath);
+
+                for (int j = 0; j < finalsize; j++)
+                {
+                    if (j < fileDataPoints.Count)
+                    {
+                        for (int i = 0; i < fileDataPoints[j].data.Length; i++)
+                        {
+                            Zerobuilder.Append(fileDataPoints[j].data[i].ToString());
+                            if (i < fileDataPoints[j].data.Length - 1)
+                            {
+                                Zerobuilder.Append("|");
+                            }
+                        }
+                        Zerobuilder.Append("\r\n");
+                    }
+                    else { Zerobuilder.Append("0|0|0|0|0|0|0\r\n"); }
+                }
+                File.WriteAllText(ZeroPath + "\\" + Path.GetFileName(pathToParse), Zerobuilder.ToString());
+
+                //    Directory.CreateDirectory(HorPath);
                 //string HorPath = pathToData + " Horrizontal";
                 //if (!Directory.Exists(HorPath))
                 //    Directory.CreateDirectory(HorPath);
@@ -582,7 +606,7 @@ namespace Motion_Project
 
         private void GenerateNew_Click(object sender, EventArgs e)
         {
-            string pathToData = Environment.CurrentDirectory + "\\Files\\"+ DirectoryName + " resized";
+            string pathToData = Environment.CurrentDirectory + "\\Files\\"+ DirectoryName + " Zero";
             string[] files = Directory.GetFiles(pathToData, "*");
             double[,,] dataFromAllFiles = new double[files.Length, 7, 1000];
 
